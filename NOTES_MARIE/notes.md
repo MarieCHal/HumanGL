@@ -71,7 +71,29 @@ Le vecteur d'un sommet `V` subit les transformations **de droite à gauche** : l
 
 Si on inverse l'ordre (ex: `S × R × T`), la rotation fait tourner le membre en grand arc autour du parent au lieu de pivoter sur son articulation (coude, genou, etc.).
 
+
+## Articulations & coordonnée homogène `w`
+
+### Représentation de l'articulation
+
+Aucun composant spécifique : l'articulation correspond simplement à l'origine locale `(0, 0, 0)` du `Node`.
+
+| Champ            | Rôle |
+|------------------|------|
+| `localPosition`  | Définit l'emplacement de l'ancrage (ex: le coude positionné sous l'épaule) |
+| `localRotation`  | Fait pivoter le cube autour de ce point d'ancrage (comme une porte sur ses gonds) |
+
+### Invariance de `w = 1`
+
+| Valeur    | Type                  | Effet |
+|-----------|-----------------------|-------|
+| `w = 1`   | Point                 | Active la translation dans le calcul matriciel (`t × 1 = t`) |
+| `w = 0`   | Vecteur de direction  | Désactive la translation (`t × 0 = 0`) |
+
+**Règle :** `w` reste égal à `1` en permanence pour l'ensemble des sommets du personnage, y compris à l'arrêt (`IDLE`).
+
 ---
+
 
 
 questions en vrac / à se familiariser:
