@@ -45,7 +45,7 @@ dotnet run
 
 ### Résultat attendu
 
-Une fenêtre intitulée **HumanGL**, de **800 × 600**, s’ouvre avec un fond sombre. Elle est vide pour le moment : le personnage sera ajouté plus tard.
+Une fenêtre intitulée **HumanGL**, de **800 × 600**, s’ouvre avec un fond sombre et un **carré blanc au centre**. Le carré est défini en dur par deux triangles et conserve ses proportions lorsque la fenêtre est redimensionnée. Le personnage sera ajouté plus tard.
 
 Pour quitter, appuyez sur **Échap** lorsque la fenêtre est active, ou utilisez son bouton de fermeture.
 
@@ -57,8 +57,18 @@ Depuis la racine du dépôt :
 dotnet build HumanGL/HumanGL.csproj
 ```
 
-## Point d’entrée
+## Organisation du code
 
-Le point d’entrée et la boucle d’affichage sont dans [`HumanGL/Program.cs`](HumanGL/Program.cs).
-Le futur dessin du personnage sera ajouté dans `RenderFrame`.
+| Fichier | Rôle |
+| --- | --- |
+| [`Program.cs`](HumanGL/Program.cs) | Crée la fenêtre et lance l’application. |
+| [`HumanGLWindow.cs`](HumanGL/HumanGLWindow.cs) | Gère la fenêtre, Échap, le redimensionnement et la boucle d’affichage. |
+| [`Rendering/SquareRenderer.cs`](HumanGL/Rendering/SquareRenderer.cs) | Contient les sommets du carré et gère ses ressources et son dessin. |
+| [`Rendering/ShaderProgram.cs`](HumanGL/Rendering/ShaderProgram.cs) | Charge, compile et active les shaders. |
+| [`Shaders/square.vert`](HumanGL/Shaders/square.vert) | Place les sommets. |
+| [`Shaders/square.frag`](HumanGL/Shaders/square.frag) | Définit la couleur blanche. |
+
+Dans `HumanGLWindow`, `OnLoad` crée le rendu du carré, `OnRenderFrame` appelle son dessin à chaque image et `OnUnload` libère les ressources graphiques.
+Les fichiers de shaders sont automatiquement copiés à côté de l’application lors de la compilation.
+
 Les fichiers de brouillon `Exemple.cs` et `Exemple2.cs` sont exclus de la compilation pour le moment.
