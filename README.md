@@ -72,3 +72,17 @@ Dans `HumanGLWindow`, `OnLoad` crée le rendu du carré, `OnRenderFrame` appelle
 Les fichiers de shaders sont automatiquement copiés à côté de l’application lors de la compilation.
 
 Les fichiers de brouillon `Exemple.cs` et `Exemple2.cs` sont exclus de la compilation pour le moment.
+
+### Vérifier la partie mathématiques
+
+Sans ouvrir la fenêtre OpenGL :
+
+```sh
+dotnet run --project HumanGL/MathCheck/MathCheck.csproj
+```
+
+Ce programme console teste uniquement les matrices, la pile, le squelette et les animations (marche / saut).
+
+## Références
+
+- Joey de Vries, *LearnOpenGL*, chapitre 8 « Transformations » : [book_pdf.pdf](https://learnopengl.com/book/book_pdf.pdf)

@@ -12,4 +12,6 @@ public struct Vector3
         Y = y;
         Z = z;
     }
+
+    public static Vector3 Zero => new(0f, 0f, 0f);
 }

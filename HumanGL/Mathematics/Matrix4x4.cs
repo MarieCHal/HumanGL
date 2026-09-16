@@ -74,4 +74,61 @@ public struct Matrix4x4
     }
 
     public static Matrix4x4 operator *(Matrix4x4 a, Matrix4x4 b) => Multiply(a, b);
+
+    /// <summary>
+    /// Rotation combinée. Les angles sont en degrés.
+    /// Ordre choisi : Rz × Ry × Rx — le point subit X, puis Y, puis Z.
+    /// Pour la marche, on n'utilise en pratique que l'axe X (balancement avant/arrière).
+    /// </summary>
+    public static Matrix4x4 RotationXYZ(Vector3 degrees)
+    {
+        return RotationZ(degrees.Z) * RotationY(degrees.Y) * RotationX(degrees.X);
+    }
+
+    /// <summary>Tourne autour de X (axe gauche-droite). Utile pour balancer un bras ou une jambe.</summary>
+    public static Matrix4x4 RotationX(float degrees)
+    {
+        float rad = DegreesToRadians(degrees);
+        float c = MathF.Cos(rad);
+        float s = MathF.Sin(rad);
+
+        var mat = Identity();
+        mat.M[1, 1] = c;
+        mat.M[1, 2] = -s;
+        mat.M[2, 1] = s;
+        mat.M[2, 2] = c;
+        return mat;
+    }
+
+    /// <summary>Tourne autour de Y (axe vertical).</summary>
+    public static Matrix4x4 RotationY(float degrees)
+    {
+        float rad = DegreesToRadians(degrees);
+        float c = MathF.Cos(rad);
+        float s = MathF.Sin(rad);
+
+        var mat = Identity();
+        mat.M[0, 0] = c;
+        mat.M[0, 2] = s;
+        mat.M[2, 0] = -s;
+        mat.M[2, 2] = c;
+        return mat;
+    }
+
+    /// <summary>Tourne autour de Z (axe devant-derrière).</summary>
+    public static Matrix4x4 RotationZ(float degrees)
+    {
+        float rad = DegreesToRadians(degrees);
+        float c = MathF.Cos(rad);
+        float s = MathF.Sin(rad);
+
+        var mat = Identity();
+        mat.M[0, 0] = c;
+        mat.M[0, 1] = -s;
+        mat.M[1, 0] = s;
+        mat.M[1, 1] = c;
+        return mat;
+    }
+
+    private static float DegreesToRadians(float degrees) => degrees * (MathF.PI / 180f);
 }
