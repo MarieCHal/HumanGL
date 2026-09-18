@@ -3,15 +3,15 @@
 // Fragment shader : programme execute par la carte graphique pour calculer
 // la couleur d'un fragment (un morceau de triangle pouvant contribuer a un pixel).
 
-// Couleur recue du vertex shader, interpolee entre les sommets du triangle.
-// Dans notre cube, les sommets d'une face ont la meme couleur : elle reste uniforme.
-in vec3 faceColor;
+// Couleur RGB du membre, envoyee depuis le C# avant chaque dessin.
+// Toutes les faces de ce membre utilisent cette meme couleur.
+uniform vec3 objectColor;
 
 // Couleur de sortie : rouge, vert, bleu et alpha (opacite).
 out vec4 color;
 
 void main()
 {
-    // Conserve la couleur recue et fixe l'alpha a 1.0 : completement opaque.
-    color = vec4(faceColor, 1.0);
+    // Applique la couleur du membre, avec une opacite de 1.0.
+    color = vec4(objectColor, 1.0);
 }

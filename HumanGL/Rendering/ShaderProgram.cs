@@ -1,3 +1,4 @@
+using HumanGL.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 
 namespace HumanGL.Rendering;
@@ -68,6 +69,17 @@ public sealed class ShaderProgram : IDisposable
         // false : les valeurs sont déjà rangées colonne par colonne pour GLSL.
         // Envoie une matrice 4x4 à cet emplacement dans le programme actif, sans la transposer.
         GL.UniformMatrix4(location, 1, false, values);
+    }
+
+    // Envoie trois composantes, par exemple rouge, vert et bleu pour une couleur.
+    // Le programme doit être actif (Use) avant cet appel.
+    public void SetVector3(string name, Vector3 value)
+    {
+        int location = GL.GetUniformLocation(_handle, name);
+        if (location == -1)
+            throw new InvalidOperationException($"Vecteur introuvable dans le shader : {name}");
+
+        GL.Uniform3(location, value.X, value.Y, value.Z);
     }
 
     public void Dispose()
