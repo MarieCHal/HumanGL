@@ -34,24 +34,21 @@ public class SceneNode
     }
 
     /// <summary>
-    /// Articulation seule : T × R.
-    /// Le scale ne passe PAS aux enfants — sinon une rotation déforme / « grossit » le membre.
+    /// Matrice poussée sur la pile : T × R × S.
+    /// Le scale est dans la stack → les enfants héritent de la taille du parent.
+    /// Le pivot géométrie est appliqué seulement au dessin.
     /// </summary>
-    public Matrix4x4 GetJointMatrix()
+    public Matrix4x4 GetStackMatrix()
     {
         return Matrix4x4.Translation(LocalPosition)
-             * Matrix4x4.RotationXYZ(LocalRotation);
+             * Matrix4x4.RotationXYZ(LocalRotation)
+             * Matrix4x4.Scale(LocalScale);
     }
 
-    /// <summary>Forme du cube : S × T_pivot (uniquement pour le dessin).</summary>
-    public Matrix4x4 GetGeometryMatrix()
-    {
-        return Matrix4x4.Scale(LocalScale)
-             * Matrix4x4.Translation(JointPivot);
-    }
+    public Matrix4x4 GetPivotMatrix() => Matrix4x4.Translation(JointPivot);
 
-    /// <summary>Matrice locale complète d'un membre isolé : T × R × S × T_pivot.</summary>
-    public Matrix4x4 GetLocalMatrix() => GetJointMatrix() * GetGeometryMatrix();
+    /// <summary>Matrice locale complète : T × R × S × T_pivot.</summary>
+    public Matrix4x4 GetLocalMatrix() => GetStackMatrix() * GetPivotMatrix();
 
     public void AddChild(SceneNode child) => Children.Add(child);
 
@@ -70,19 +67,81 @@ public class SceneNode
         return null;
     }
 
+    /// <summary>
+    /// Resize runtime : membre + delta (+/−) sur X, Y, Z.
+    /// Grâce au S dans la pile, les enfants grossissent et se repositionnent tout seuls
+    /// (leurs offsets sont en espace unitaire, ex. avant-bras à y = -1).
+    /// </summary>
+    public bool ScaleMember(string memberName, float deltaUnits)
+    {
+        SceneNode? node = FindNode(memberName);
+        if (node == null)
+            return false;
+
+        node.LocalScale = new Vector3(
+            ClampSize(node.LocalScale.X + deltaUnits),
+            ClampSize(node.LocalScale.Y + deltaUnits),
+            ClampSize(node.LocalScale.Z + deltaUnits));
+
+        // Épaules / hanches : ratios qui dépendent des largeurs relatives.
+        RefreshUnitAnchors();
+        return true;
+    }
+
+    /// <summary>
+    /// Accroches en espace UNITAIRE du parent (avant son scale).
+    /// Ex. avant-bras à (0,-1,0) : le S du bras l'envoie au bout et l'échelle.
+    /// </summary>
+    public void RefreshUnitAnchors()
+    {
+        foreach (SceneNode child in Children)
+        {
+            child.LocalPosition = ComputeUnitAnchor(child);
+            child.RefreshUnitAnchors();
+        }
+    }
+
+    private Vector3 ComputeUnitAnchor(SceneNode child)
+    {
+        return child.Name switch
+        {
+            "Head" => new Vector3(0f, 0.5f, 0f),
+
+            "LeftUpperArm" => new Vector3(
+                -(0.5f + 0.5f * child.LocalScale.X),
+                0.38f,
+                0f),
+            "RightUpperArm" => new Vector3(
+                0.5f + 0.5f * child.LocalScale.X,
+                0.38f,
+                0f),
+
+            "LeftThigh" => new Vector3(-0.22f, -0.5f, 0f),
+            "RightThigh" => new Vector3(0.22f, -0.5f, 0f),
+
+            "LeftForearm" or "RightForearm" or "LeftCalf" or "RightCalf"
+                => new Vector3(0f, -1f, 0f),
+
+            _ => child.LocalPosition
+        };
+    }
+
+    private static float ClampSize(float value) => Math.Clamp(value, 0.15f, 4f);
+
     public static SceneNode InitCharacter()
     {
         Vector3 center = Vector3.Zero;
         Vector3 hangFromTop = new(0f, -0.5f, 0f);
         Vector3 sitOnBottom = new(0f, 0.5f, 0f);
 
-        // Tailles monde directes : plus besoin de compenser, le scale n'est plus dans la pile.
+        // Scales locaux : le S parent se multiplie avec l'enfant dans la pile.
+        // Pour une taille visible V sous un parent de scale P : local = V / P (composante par composante).
         Vector3 torso = new(1.4f, 1.5f, 0.75f);
-        Vector3 head = new(0.55f, 0.55f, 0.55f);
-        Vector3 arm = new(0.28f, 0.85f, 0.28f);
-        Vector3 forearm = new(0.28f, 0.75f, 0.28f);
-        Vector3 thigh = new(0.5f, 0.95f, 0.5f);
-        Vector3 calf = new(0.5f, 0.9f, 0.5f);
+        Vector3 head = Divide(new Vector3(0.55f, 0.55f, 0.55f), torso);
+        Vector3 arm = Divide(new Vector3(0.28f, 0.85f, 0.28f), torso);
+        Vector3 forearm = Divide(new Vector3(0.28f, 0.75f, 0.28f), new Vector3(0.28f, 0.85f, 0.28f));
+        Vector3 thigh = Divide(new Vector3(0.5f, 0.95f, 0.5f), torso);
+        Vector3 calf = Divide(new Vector3(0.5f, 0.9f, 0.5f), new Vector3(0.5f, 0.95f, 0.5f));
 
         Vector3 skinColor = new(0.65f, 0.40f, 0.28f);
         Vector3 shirtColor = new(1.0f, 0.40f, 0.70f);
@@ -90,38 +149,30 @@ public class SceneNode
 
         SceneNode torsoNode = new("Torso", Vector3.Zero, Vector3.Zero, torso, center) { Color = shirtColor };
 
-        // Positions dans l'espace d'articulation du parent (sans son scale).
-        torsoNode.AddChild(new SceneNode(
-            "Head", new Vector3(0f, torso.Y * 0.5f, 0f), Vector3.Zero, head, sitOnBottom) { Color = skinColor });
+        torsoNode.AddChild(new SceneNode("Head", Vector3.Zero, Vector3.Zero, head, sitOnBottom) { Color = skinColor });
 
-        float shoulderX = torso.X * 0.5f + arm.X * 0.5f;
-        float shoulderY = torso.Y * 0.38f;
-
-        SceneNode leftUpperArm = new(
-            "LeftUpperArm", new Vector3(-shoulderX, shoulderY, 0f), Vector3.Zero, arm, hangFromTop) { Color = skinColor };
-        leftUpperArm.AddChild(new SceneNode(
-            "LeftForearm", new Vector3(0f, -arm.Y, 0f), Vector3.Zero, forearm, hangFromTop) { Color = skinColor });
+        SceneNode leftUpperArm = new("LeftUpperArm", Vector3.Zero, Vector3.Zero, arm, hangFromTop) { Color = skinColor };
+        leftUpperArm.AddChild(new SceneNode("LeftForearm", Vector3.Zero, Vector3.Zero, forearm, hangFromTop) { Color = skinColor });
         torsoNode.AddChild(leftUpperArm);
 
-        SceneNode rightUpperArm = new(
-            "RightUpperArm", new Vector3(shoulderX, shoulderY, 0f), Vector3.Zero, arm, hangFromTop) { Color = skinColor };
-        rightUpperArm.AddChild(new SceneNode(
-            "RightForearm", new Vector3(0f, -arm.Y, 0f), Vector3.Zero, forearm, hangFromTop) { Color = skinColor });
+        SceneNode rightUpperArm = new("RightUpperArm", Vector3.Zero, Vector3.Zero, arm, hangFromTop) { Color = skinColor };
+        rightUpperArm.AddChild(new SceneNode("RightForearm", Vector3.Zero, Vector3.Zero, forearm, hangFromTop) { Color = skinColor });
         torsoNode.AddChild(rightUpperArm);
 
-        float hipX = 0.31f;
-        SceneNode leftThigh = new(
-            "LeftThigh", new Vector3(-hipX, -torso.Y * 0.5f, 0f), Vector3.Zero, thigh, hangFromTop) { Color = pantsColor };
-        leftThigh.AddChild(new SceneNode(
-            "LeftCalf", new Vector3(0f, -thigh.Y, 0f), Vector3.Zero, calf, hangFromTop) { Color = pantsColor });
+        SceneNode leftThigh = new("LeftThigh", Vector3.Zero, Vector3.Zero, thigh, hangFromTop) { Color = pantsColor };
+        leftThigh.AddChild(new SceneNode("LeftCalf", Vector3.Zero, Vector3.Zero, calf, hangFromTop) { Color = pantsColor });
         torsoNode.AddChild(leftThigh);
 
-        SceneNode rightThigh = new(
-            "RightThigh", new Vector3(hipX, -torso.Y * 0.5f, 0f), Vector3.Zero, thigh, hangFromTop) { Color = pantsColor };
-        rightThigh.AddChild(new SceneNode(
-            "RightCalf", new Vector3(0f, -thigh.Y, 0f), Vector3.Zero, calf, hangFromTop) { Color = pantsColor });
+        SceneNode rightThigh = new("RightThigh", Vector3.Zero, Vector3.Zero, thigh, hangFromTop) { Color = pantsColor };
+        rightThigh.AddChild(new SceneNode("RightCalf", Vector3.Zero, Vector3.Zero, calf, hangFromTop) { Color = pantsColor });
         torsoNode.AddChild(rightThigh);
 
+        torsoNode.RefreshUnitAnchors();
         return torsoNode;
     }
+
+    private static Vector3 Divide(Vector3 desiredWorld, Vector3 parentWorld) =>
+        new(desiredWorld.X / parentWorld.X,
+            desiredWorld.Y / parentWorld.Y,
+            desiredWorld.Z / parentWorld.Z);
 }

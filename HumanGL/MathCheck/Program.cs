@@ -96,6 +96,33 @@ Check("Saut : crouch puis vol, puis retour idle", () =>
     return crouched && goingUp && landed;
 });
 
+Check("Resize : agrandir le bras grossit et déplace l'avant-bras via la pile", () =>
+{
+    SceneNode torso = SceneNode.InitCharacter();
+    SceneNode arm = torso.FindNode("LeftUpperArm")!;
+    SceneNode forearm = torso.FindNode("LeftForearm")!;
+
+    if (!Near(forearm.LocalPosition.Y, -1f))
+        return false;
+
+    float armScaleBefore = arm.LocalScale.Y;
+    float worldYBefore = WorldForearmY(torso, arm, forearm);
+
+    torso.ScaleMember("LeftUpperArm", +0.3f);
+
+    float worldYAfter = WorldForearmY(torso, arm, forearm);
+    // L'offset local reste unitaire ; le S du bras dans la pile a changé.
+    return Near(forearm.LocalPosition.Y, -1f)
+        && arm.LocalScale.Y > armScaleBefore + 0.2f
+        && worldYAfter < worldYBefore - 0.15f;
+});
+
+static float WorldForearmY(SceneNode torso, SceneNode arm, SceneNode forearm)
+{
+    Matrix4x4 world = torso.GetStackMatrix() * arm.GetStackMatrix() * forearm.GetStackMatrix();
+    return world.M[1, 3];
+}
+
 Console.WriteLine();
 Console.WriteLine(failed == 0
     ? "Tout est OK."

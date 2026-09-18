@@ -19,6 +19,14 @@ public class HumanGLWindow : GameWindow
     private readonly OrbitCamera _camera = new();
     private readonly float[] _projection = new float[16];
     private float _time;
+    private string _scaleTarget = "LeftUpperArm";
+    private const float ScaleStep = 0.15f;
+    private static readonly string[] ScaleTargets =
+    [
+        "Head", "Torso", "LeftUpperArm", "LeftForearm",
+        "LeftThigh", "LeftCalf", "RightUpperArm", "RightForearm"
+    ];
+    private int _scaleTargetIndex = 2;
 
     public HumanGLWindow() : base(GameWindowSettings.Default, new NativeWindowSettings
     {
@@ -63,6 +71,35 @@ public class HumanGLWindow : GameWindow
         if (KeyboardState.IsKeyPressed(Keys.Space))
             _animator.SetState(AnimState.Jump);
 
+        // Resize live (AZERTY-friendly) :
+        //   T = membre suivant
+        //   R = agrandir
+        //   F = réduire
+        // La fenêtre HumanGL doit avoir le focus (cliquer dedans).
+        if (KeyboardState.IsKeyPressed(Keys.T))
+        {
+            _scaleTargetIndex = (_scaleTargetIndex + 1) % ScaleTargets.Length;
+            _scaleTarget = ScaleTargets[_scaleTargetIndex];
+            Title = $"HumanGL — cible : {_scaleTarget}";
+            Console.WriteLine($"[scale] cible = {_scaleTarget}");
+        }
+
+        if (_character != null)
+        {
+            if (KeyboardState.IsKeyPressed(Keys.R))
+            {
+                _character.ScaleMember(_scaleTarget, +ScaleStep);
+                Title = $"HumanGL — {_scaleTarget} +";
+                Console.WriteLine($"[scale] {_scaleTarget} +{ScaleStep}");
+            }
+            if (KeyboardState.IsKeyPressed(Keys.F))
+            {
+                _character.ScaleMember(_scaleTarget, -ScaleStep);
+                Title = $"HumanGL — {_scaleTarget} -";
+                Console.WriteLine($"[scale] {_scaleTarget} -{ScaleStep}");
+            }
+        }
+
         float deltaTime = (float)args.Time;
         _time += deltaTime;
         if (_character != null)
@@ -92,15 +129,15 @@ public class HumanGLWindow : GameWindow
     }
 
     /// <summary>
-    /// Point de raccord : pile = articulations (T×R) seulement ;
-    /// le scale est appliqué au moment du dessin pour ne pas déformer les enfants.
+    /// Pile = T × R × S. Les enfants héritent du scale du parent.
+    /// Pivot uniquement au Draw.
     /// </summary>
     private void RenderNode(SceneNode node)
     {
         _stack.Push();
-        _stack.Multiply(node.GetJointMatrix());
+        _stack.Multiply(node.GetStackMatrix());
 
-        Matrix4x4 model = _stack.GetCurrent() * node.GetGeometryMatrix();
+        Matrix4x4 model = _stack.GetCurrent() * node.GetPivotMatrix();
         _cube!.Draw(model.ToColumnMajorArray(), _camera.ViewMatrix, _projection, node.Color);
 
         foreach (SceneNode child in node.Children)
