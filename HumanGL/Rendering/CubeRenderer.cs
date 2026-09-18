@@ -1,3 +1,4 @@
+using HumanGL.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 
 namespace HumanGL.Rendering;
@@ -12,56 +13,56 @@ public sealed class CubeRenderer : IDisposable
     {
         // Cube 1x1x1 centré à l'origine : chaque coordonnée vaut -0.5 ou +0.5.
         // 6 faces × 2 triangles × 3 sommets = 36 sommets.
-        // Chaque ligne contient une position (x, y, z) puis une couleur (r, g, b).
+        // Chaque ligne contient uniquement une position (x, y, z).
         float[] vertices =
         {
-            // Avant (+Z) : rouge.
-            -0.5f, -0.5f,  0.5f,  0.9f, 0.3f, 0.3f,
-             0.5f, -0.5f,  0.5f,  0.9f, 0.3f, 0.3f,
-             0.5f,  0.5f,  0.5f,  0.9f, 0.3f, 0.3f,
-            -0.5f, -0.5f,  0.5f,  0.9f, 0.3f, 0.3f,
-             0.5f,  0.5f,  0.5f,  0.9f, 0.3f, 0.3f,
-            -0.5f,  0.5f,  0.5f,  0.9f, 0.3f, 0.3f,
+            // Avant (+Z).
+            -0.5f, -0.5f,  0.5f,
+             0.5f, -0.5f,  0.5f,
+             0.5f,  0.5f,  0.5f,
+            -0.5f, -0.5f,  0.5f,
+             0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f,  0.5f,
 
-            // Arrière (-Z) : orange.
-             0.5f, -0.5f, -0.5f,  1.0f, 0.6f, 0.2f,
-            -0.5f, -0.5f, -0.5f,  1.0f, 0.6f, 0.2f,
-            -0.5f,  0.5f, -0.5f,  1.0f, 0.6f, 0.2f,
-             0.5f, -0.5f, -0.5f,  1.0f, 0.6f, 0.2f,
-            -0.5f,  0.5f, -0.5f,  1.0f, 0.6f, 0.2f,
-             0.5f,  0.5f, -0.5f,  1.0f, 0.6f, 0.2f,
+            // Arrière (-Z).
+             0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f,  0.5f, -0.5f,
+             0.5f, -0.5f, -0.5f,
+            -0.5f,  0.5f, -0.5f,
+             0.5f,  0.5f, -0.5f,
 
-            // Droite (+X) : bleu.
-             0.5f, -0.5f,  0.5f,  0.3f, 0.5f, 1.0f,
-             0.5f, -0.5f, -0.5f,  0.3f, 0.5f, 1.0f,
-             0.5f,  0.5f, -0.5f,  0.3f, 0.5f, 1.0f,
-             0.5f, -0.5f,  0.5f,  0.3f, 0.5f, 1.0f,
-             0.5f,  0.5f, -0.5f,  0.3f, 0.5f, 1.0f,
-             0.5f,  0.5f,  0.5f,  0.3f, 0.5f, 1.0f,
+            // Droite (+X).
+             0.5f, -0.5f,  0.5f,
+             0.5f, -0.5f, -0.5f,
+             0.5f,  0.5f, -0.5f,
+             0.5f, -0.5f,  0.5f,
+             0.5f,  0.5f, -0.5f,
+             0.5f,  0.5f,  0.5f,
 
-            // Gauche (-X) : violet.
-            -0.5f, -0.5f, -0.5f,  0.7f, 0.3f, 0.9f,
-            -0.5f, -0.5f,  0.5f,  0.7f, 0.3f, 0.9f,
-            -0.5f,  0.5f,  0.5f,  0.7f, 0.3f, 0.9f,
-            -0.5f, -0.5f, -0.5f,  0.7f, 0.3f, 0.9f,
-            -0.5f,  0.5f,  0.5f,  0.7f, 0.3f, 0.9f,
-            -0.5f,  0.5f, -0.5f,  0.7f, 0.3f, 0.9f,
+            // Gauche (-X).
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f,  0.5f,
+            -0.5f,  0.5f,  0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f, -0.5f,
 
-            // Dessus (+Y) : vert.
-            -0.5f,  0.5f,  0.5f,  0.3f, 0.8f, 0.5f,
-             0.5f,  0.5f,  0.5f,  0.3f, 0.8f, 0.5f,
-             0.5f,  0.5f, -0.5f,  0.3f, 0.8f, 0.5f,
-            -0.5f,  0.5f,  0.5f,  0.3f, 0.8f, 0.5f,
-             0.5f,  0.5f, -0.5f,  0.3f, 0.8f, 0.5f,
-            -0.5f,  0.5f, -0.5f,  0.3f, 0.8f, 0.5f,
+            // Dessus (+Y).
+            -0.5f,  0.5f,  0.5f,
+             0.5f,  0.5f,  0.5f,
+             0.5f,  0.5f, -0.5f,
+            -0.5f,  0.5f,  0.5f,
+             0.5f,  0.5f, -0.5f,
+            -0.5f,  0.5f, -0.5f,
 
-            // Dessous (-Y) : jaune.
-            -0.5f, -0.5f, -0.5f,  0.9f, 0.8f, 0.2f,
-             0.5f, -0.5f, -0.5f,  0.9f, 0.8f, 0.2f,
-             0.5f, -0.5f,  0.5f,  0.9f, 0.8f, 0.2f,
-            -0.5f, -0.5f, -0.5f,  0.9f, 0.8f, 0.2f,
-             0.5f, -0.5f,  0.5f,  0.9f, 0.8f, 0.2f,
-            -0.5f, -0.5f,  0.5f,  0.9f, 0.8f, 0.2f
+            // Dessous (-Y).
+            -0.5f, -0.5f, -0.5f,
+             0.5f, -0.5f, -0.5f,
+             0.5f, -0.5f,  0.5f,
+            -0.5f, -0.5f, -0.5f,
+             0.5f, -0.5f,  0.5f,
+            -0.5f, -0.5f,  0.5f
         };
 
         string shaderDirectory = Path.Combine(AppContext.BaseDirectory, "Shaders");
@@ -82,25 +83,23 @@ public sealed class CubeRenderer : IDisposable
         GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float),
             vertices, BufferUsageHint.StaticDraw);
 
-        const int stride = 6 * sizeof(float);
+        const int stride = 3 * sizeof(float);
         // Attribut 0 : position = 3 float au début de chaque sommet ; stride sépare deux sommets.
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, 0);
         // Active l'attribut 0 (position) pour le vertex shader.
         GL.EnableVertexAttribArray(0);
-        // Attribut 1 : couleur = 3 float après la position, donc à 3 × sizeof(float) octets.
-        GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, stride, 3 * sizeof(float));
-        // Active l'attribut 1 (couleur) pour le vertex shader.
-        GL.EnableVertexAttribArray(1);
         // Désactive le VAO pour éviter de modifier sa configuration par accident.
         GL.BindVertexArray(0);
     }
 
-    public void Draw(float[] model, float[] view, float[] projection)
+    public void Draw(float[] model, float[] view, float[] projection, Vector3 color)
     {
         _shader.Use();
         _shader.SetMatrix4("model", model);
         _shader.SetMatrix4("view", view);
         _shader.SetMatrix4("projection", projection);
+        // Envoie la couleur du membre avant de dessiner le cube.
+        _shader.SetVector3("objectColor", color);
         // Active le VAO du cube pour utiliser ou configurer ses attributs de sommets.
         GL.BindVertexArray(_vao);
         // Un seul appel de dessin pour tout le cube.

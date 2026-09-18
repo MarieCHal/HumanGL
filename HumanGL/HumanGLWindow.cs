@@ -100,7 +100,7 @@ public class HumanGLWindow : GameWindow
         _stack.Multiply(node.GetLocalMatrix());
 
         float[] model = _stack.GetCurrent().ToColumnMajorArray();
-        _cube!.Draw(model, _camera.ViewMatrix, _projection);
+        _cube!.Draw(model, _camera.ViewMatrix, _projection, node.Color);
 
         foreach (SceneNode child in node.Children)
             RenderNode(child);

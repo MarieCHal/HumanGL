@@ -21,6 +21,9 @@ public class SceneNode
     /// </summary>
     public Vector3 JointPivot { get; set; }
 
+    // Couleur RGB du membre (valeurs de 0 à 1).
+    // Blanc par défaut ; chaque membre possède sa propre couleur.
+    public Vector3 Color { get; set; } = new(1f, 1f, 1f);
     public List<SceneNode> Children { get; } = new();
 
     public SceneNode(string name, Vector3 position, Vector3 rotation, Vector3 scale, Vector3 jointPivot)
@@ -77,11 +80,16 @@ public class SceneNode
         Vector3 thighWorld = new(0.5f, 0.95f, 0.5f);     // cuisse = tibia (largeur)
         Vector3 calfWorld = new(0.5f, 0.9f, 0.5f);
 
-        SceneNode torso = new("Torso", Vector3.Zero, Vector3.Zero, torsoWorld, center);
+        // Palette du personnage : modifier ces valeurs pour changer son apparence.
+        Vector3 skinColor = new(1.0f, 0.77f, 0.65f);
+        Vector3 shirtColor = new(0.13f, 0.53f, 0.13f);
+        Vector3 pantsColor = new(0.04f, 0.37f, 0.64f);
+
+        SceneNode torso = new("Torso", Vector3.Zero, Vector3.Zero, torsoWorld, center) { Color = shirtColor };
 
         torso.AddChild(new SceneNode(
             "Head", new Vector3(0f, 0.5f, 0f), Vector3.Zero,
-            Divide(headWorld, torsoWorld), sitOnBottom));
+            Divide(headWorld, torsoWorld), sitOnBottom) { Color = skinColor });
 
         // Accroché à l'extérieur du torse : bord (0.5) + demi-largeur du bras
         // (sinon la moitié du bras rentre dans le volume du torse).
@@ -89,34 +97,34 @@ public class SceneNode
 
         SceneNode leftUpperArm = new(
             "LeftUpperArm", new Vector3(-shoulderX, 0.5f, 0f), Vector3.Zero,
-            Divide(armWorld, torsoWorld), hangFromTop);
+            Divide(armWorld, torsoWorld), hangFromTop) { Color = skinColor };
         leftUpperArm.AddChild(new SceneNode(
             "LeftForearm", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
-            Divide(forearmWorld, armWorld), hangFromTop));
+            Divide(forearmWorld, armWorld), hangFromTop) { Color = skinColor });
         torso.AddChild(leftUpperArm);
 
         SceneNode rightUpperArm = new(
             "RightUpperArm", new Vector3(shoulderX, 0.5f, 0f), Vector3.Zero,
-            Divide(armWorld, torsoWorld), hangFromTop);
+            Divide(armWorld, torsoWorld), hangFromTop) { Color = skinColor };
         rightUpperArm.AddChild(new SceneNode(
             "RightForearm", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
-            Divide(forearmWorld, armWorld), hangFromTop));
+            Divide(forearmWorld, armWorld), hangFromTop) { Color = skinColor });
         torso.AddChild(rightUpperArm);
 
         SceneNode leftThigh = new(
             "LeftThigh", new Vector3(-0.28f, -0.5f, 0f), Vector3.Zero,
-            Divide(thighWorld, torsoWorld), hangFromTop);
+            Divide(thighWorld, torsoWorld), hangFromTop) { Color = pantsColor };
         leftThigh.AddChild(new SceneNode(
             "LeftCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
-            Divide(calfWorld, thighWorld), hangFromTop));
+            Divide(calfWorld, thighWorld), hangFromTop) { Color = pantsColor });
         torso.AddChild(leftThigh);
 
         SceneNode rightThigh = new(
             "RightThigh", new Vector3(0.28f, -0.5f, 0f), Vector3.Zero,
-            Divide(thighWorld, torsoWorld), hangFromTop);
+            Divide(thighWorld, torsoWorld), hangFromTop) { Color = pantsColor };
         rightThigh.AddChild(new SceneNode(
             "RightCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
-            Divide(calfWorld, thighWorld), hangFromTop));
+            Divide(calfWorld, thighWorld), hangFromTop) { Color = pantsColor });
         torso.AddChild(rightThigh);
 
         return torso;
