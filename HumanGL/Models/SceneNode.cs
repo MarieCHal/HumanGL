@@ -12,25 +12,37 @@ public class SceneNode
     public Vector3 LocalPosition { get; set; }
     public Vector3 LocalRotation { get; set; }
     public Vector3 LocalScale { get; set; }
+
+    /// <summary>
+    /// Décalage du cube unitaire pour placer l'articulation.
+    /// (0, -0.5, 0) = joint en haut du membre (bras, jambe).
+    /// (0, +0.5, 0) = joint en bas (tête sur le cou).
+    /// (0, 0, 0) = centré (torse).
+    /// </summary>
+    public Vector3 JointPivot { get; set; }
+
     public List<SceneNode> Children { get; } = new();
 
-    public SceneNode(string name, Vector3 position, Vector3 rotation, Vector3 scale)
+    public SceneNode(string name, Vector3 position, Vector3 rotation, Vector3 scale, Vector3 jointPivot)
     {
         Name = name;
         LocalPosition = position;
         LocalRotation = rotation;
         LocalScale = scale;
+        JointPivot = jointPivot;
     }
 
     /// <summary>
-    /// Matrice locale : T × R × S.
-    /// Appliquée à un sommet : d'abord la taille, puis la rotation, puis le déplacement.
+    /// T × R × S × T_pivot.
+    /// Le pivot place le joint au bout du cube, pas au centre —
+    /// sinon la moitié du bras remonterait dans la tête.
     /// </summary>
     public Matrix4x4 GetLocalMatrix()
     {
         return Matrix4x4.Translation(LocalPosition)
              * Matrix4x4.RotationXYZ(LocalRotation)
-             * Matrix4x4.Scale(LocalScale);
+             * Matrix4x4.Scale(LocalScale)
+             * Matrix4x4.Translation(JointPivot);
     }
 
     public void AddChild(SceneNode child) => Children.Add(child);
@@ -50,33 +62,69 @@ public class SceneNode
         return null;
     }
 
-    /// <summary>
-    /// Cube centré : il va de -0.5 à +0.5.
-    /// On accroche les enfants au bord (0.5), pas à la taille du parent.
-    /// Le scale du parent, déjà dans la pile, les écarte tout seul si on allonge un membre.
-    /// </summary>
     public static SceneNode InitCharacter()
     {
-        SceneNode torso = new("Torso", Vector3.Zero, Vector3.Zero, new Vector3(1.5f, 2.0f, 1.0f));
+        Vector3 center = Vector3.Zero;
+        Vector3 hangFromTop = new(0f, -0.5f, 0f);
+        Vector3 sitOnBottom = new(0f, 0.5f, 0f);
 
-        torso.AddChild(new SceneNode("Head", new Vector3(0f, 0.5f, 0f), Vector3.Zero, new Vector3(0.8f, 0.8f, 0.8f)));
+        // Tailles VISIBLES (monde). Le scale du parent se multiplie avec l'enfant,
+        // donc le LocalScale enfant = tailleWanted / scaleMondeParent.
+        Vector3 torsoWorld = new(1.4f, 1.5f, 0.75f);
+        Vector3 headWorld = new(0.55f, 0.55f, 0.55f);   // cube
+        Vector3 armWorld = new(0.35f, 0.85f, 0.35f);     // bras = avant-bras (largeur)
+        Vector3 forearmWorld = new(0.35f, 0.75f, 0.35f);
+        Vector3 thighWorld = new(0.5f, 0.95f, 0.5f);     // cuisse = tibia (largeur)
+        Vector3 calfWorld = new(0.5f, 0.9f, 0.5f);
 
-        SceneNode leftUpperArm = new("LeftUpperArm", new Vector3(-0.5f, 0.35f, 0f), Vector3.Zero, new Vector3(0.4f, 1.0f, 0.4f));
-        leftUpperArm.AddChild(new SceneNode("LeftForearm", new Vector3(0f, -0.5f, 0f), Vector3.Zero, new Vector3(0.35f, 0.9f, 0.35f)));
+        SceneNode torso = new("Torso", Vector3.Zero, Vector3.Zero, torsoWorld, center);
+
+        torso.AddChild(new SceneNode(
+            "Head", new Vector3(0f, 0.5f, 0f), Vector3.Zero,
+            Divide(headWorld, torsoWorld), sitOnBottom));
+
+        // Accroché à l'extérieur du torse : bord (0.5) + demi-largeur du bras
+        // (sinon la moitié du bras rentre dans le volume du torse).
+        float shoulderX = 0.5f + (armWorld.X * 0.5f) / torsoWorld.X;
+
+        SceneNode leftUpperArm = new(
+            "LeftUpperArm", new Vector3(-shoulderX, 0.5f, 0f), Vector3.Zero,
+            Divide(armWorld, torsoWorld), hangFromTop);
+        leftUpperArm.AddChild(new SceneNode(
+            "LeftForearm", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
+            Divide(forearmWorld, armWorld), hangFromTop));
         torso.AddChild(leftUpperArm);
 
-        SceneNode rightUpperArm = new("RightUpperArm", new Vector3(0.5f, 0.35f, 0f), Vector3.Zero, new Vector3(0.4f, 1.0f, 0.4f));
-        rightUpperArm.AddChild(new SceneNode("RightForearm", new Vector3(0f, -0.5f, 0f), Vector3.Zero, new Vector3(0.35f, 0.9f, 0.35f)));
+        SceneNode rightUpperArm = new(
+            "RightUpperArm", new Vector3(shoulderX, 0.5f, 0f), Vector3.Zero,
+            Divide(armWorld, torsoWorld), hangFromTop);
+        rightUpperArm.AddChild(new SceneNode(
+            "RightForearm", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
+            Divide(forearmWorld, armWorld), hangFromTop));
         torso.AddChild(rightUpperArm);
 
-        SceneNode leftThigh = new("LeftThigh", new Vector3(-0.15f, -0.5f, 0f), Vector3.Zero, new Vector3(0.5f, 1.2f, 0.5f));
-        leftThigh.AddChild(new SceneNode("LeftCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero, new Vector3(0.45f, 1.1f, 0.45f)));
+        SceneNode leftThigh = new(
+            "LeftThigh", new Vector3(-0.28f, -0.5f, 0f), Vector3.Zero,
+            Divide(thighWorld, torsoWorld), hangFromTop);
+        leftThigh.AddChild(new SceneNode(
+            "LeftCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
+            Divide(calfWorld, thighWorld), hangFromTop));
         torso.AddChild(leftThigh);
 
-        SceneNode rightThigh = new("RightThigh", new Vector3(0.15f, -0.5f, 0f), Vector3.Zero, new Vector3(0.5f, 1.2f, 0.5f));
-        rightThigh.AddChild(new SceneNode("RightCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero, new Vector3(0.45f, 1.1f, 0.45f)));
+        SceneNode rightThigh = new(
+            "RightThigh", new Vector3(0.28f, -0.5f, 0f), Vector3.Zero,
+            Divide(thighWorld, torsoWorld), hangFromTop);
+        rightThigh.AddChild(new SceneNode(
+            "RightCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
+            Divide(calfWorld, thighWorld), hangFromTop));
         torso.AddChild(rightThigh);
 
         return torso;
     }
+
+    /// <summary>Scale local pour obtenir desiredWorld malgré le scale déjà appliqué par le parent.</summary>
+    private static Vector3 Divide(Vector3 desiredWorld, Vector3 parentWorld) =>
+        new(desiredWorld.X / parentWorld.X,
+            desiredWorld.Y / parentWorld.Y,
+            desiredWorld.Z / parentWorld.Z);
 }

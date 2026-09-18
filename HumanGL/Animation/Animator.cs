@@ -69,6 +69,10 @@ public class Animator
         SetRotationX(root, "LeftForearm", MathF.Abs(walkAngle) * 0.5f);
         SetRotationX(root, "RightForearm", MathF.Abs(walkAngle) * 0.5f);
 
+        // Genoux : le mollet reste un peu en arrière par rapport à la cuisse
+        SetRotationX(root, "LeftCalf", MathF.Abs(walkAngle) * 0.6f);
+        SetRotationX(root, "RightCalf", MathF.Abs(walkAngle) * 0.6f);
+
         root.LocalPosition = new Vector3(root.LocalPosition.X, GroundY, root.LocalPosition.Z);
     }
 

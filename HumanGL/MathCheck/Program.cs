@@ -59,8 +59,8 @@ Check("Squelette : torse, avant-bras trouvé, matrice locale TRS", () =>
     Matrix4x4 local = torso.GetLocalMatrix();
     return torso.Children.Count == 5
         && forearm != null
-        && Near(local.M[0, 0], 1.5f)
-        && Near(local.M[1, 1], 2f);
+        && Near(local.M[0, 0], 1.4f)
+        && Near(local.M[1, 1], 1.5f);
 });
 
 Check("Marche : bras opposés, angle de 30° au sommet du sinus", () =>
