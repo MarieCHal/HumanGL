@@ -71,8 +71,6 @@ dotnet build HumanGL/HumanGL.csproj
 Dans `HumanGLWindow`, `OnLoad` crée le rendu du carré, `OnRenderFrame` appelle son dessin à chaque image et `OnUnload` libère les ressources graphiques.
 Les fichiers de shaders sont automatiquement copiés à côté de l’application lors de la compilation.
 
-Les fichiers de brouillon `Exemple.cs` et `Exemple2.cs` sont exclus de la compilation pour le moment.
-
 ### Vérifier la partie mathématiques
 
 Sans ouvrir la fenêtre OpenGL :

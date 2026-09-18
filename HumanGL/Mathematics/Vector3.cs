@@ -1,5 +1,8 @@
 namespace HumanGL.Mathematics;
 
+/// <summary>
+/// position rotation ou scale
+/// </summary>
 public struct Vector3
 {
     public float X;

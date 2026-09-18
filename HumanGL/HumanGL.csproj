@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="OpenTK" Version="4.9.4" />
-    <!-- Ces brouillons ne font pas encore partie de l’application. -->
-    <Compile Remove="Animation/Exemple.cs;Mathematics/Exemple2.cs" />
     <None Update="Shaders/*.vert;Shaders/*.frag"
           CopyToOutputDirectory="PreserveNewest"
           CopyToPublishDirectory="PreserveNewest" />
