@@ -92,6 +92,9 @@ public class Animator
             SetRotationX(root, "RightCalf", 75f * crouch);
             SetRotationX(root, "LeftUpperArm", 20f * crouch);
             SetRotationX(root, "RightUpperArm", 20f * crouch);
+            // Coudes vers l'avant, opposés aux genoux
+            SetRotationX(root, "LeftForearm", -60f * crouch);
+            SetRotationX(root, "RightForearm", -60f * crouch);
             return;
         }
 
@@ -113,6 +116,8 @@ public class Animator
         SetRotationX(root, "RightThigh", -35f);
         SetRotationX(root, "LeftCalf", 50f);
         SetRotationX(root, "RightCalf", 50f);
+        SetRotationX(root, "LeftForearm", -45f);
+        SetRotationX(root, "RightForearm", -45f);
     }
 
     private static void ResetPose(SceneNode node)

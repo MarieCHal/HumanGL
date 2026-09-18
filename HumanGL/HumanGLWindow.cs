@@ -92,15 +92,16 @@ public class HumanGLWindow : GameWindow
     }
 
     /// <summary>
-    /// Point de raccord : ta matrice monde (pile) → son Draw(cube).
+    /// Point de raccord : pile = articulations (T×R) seulement ;
+    /// le scale est appliqué au moment du dessin pour ne pas déformer les enfants.
     /// </summary>
     private void RenderNode(SceneNode node)
     {
         _stack.Push();
-        _stack.Multiply(node.GetLocalMatrix());
+        _stack.Multiply(node.GetJointMatrix());
 
-        float[] model = _stack.GetCurrent().ToColumnMajorArray();
-        _cube!.Draw(model, _camera.ViewMatrix, _projection, node.Color);
+        Matrix4x4 model = _stack.GetCurrent() * node.GetGeometryMatrix();
+        _cube!.Draw(model.ToColumnMajorArray(), _camera.ViewMatrix, _projection, node.Color);
 
         foreach (SceneNode child in node.Children)
             RenderNode(child);

@@ -21,8 +21,6 @@ public class SceneNode
     /// </summary>
     public Vector3 JointPivot { get; set; }
 
-    // Couleur RGB du membre (valeurs de 0 à 1).
-    // Blanc par défaut ; chaque membre possède sa propre couleur.
     public Vector3 Color { get; set; } = new(1f, 1f, 1f);
     public List<SceneNode> Children { get; } = new();
 
@@ -36,17 +34,24 @@ public class SceneNode
     }
 
     /// <summary>
-    /// T × R × S × T_pivot.
-    /// Le pivot place le joint au bout du cube, pas au centre —
-    /// sinon la moitié du bras remonterait dans la tête.
+    /// Articulation seule : T × R.
+    /// Le scale ne passe PAS aux enfants — sinon une rotation déforme / « grossit » le membre.
     /// </summary>
-    public Matrix4x4 GetLocalMatrix()
+    public Matrix4x4 GetJointMatrix()
     {
         return Matrix4x4.Translation(LocalPosition)
-             * Matrix4x4.RotationXYZ(LocalRotation)
-             * Matrix4x4.Scale(LocalScale)
+             * Matrix4x4.RotationXYZ(LocalRotation);
+    }
+
+    /// <summary>Forme du cube : S × T_pivot (uniquement pour le dessin).</summary>
+    public Matrix4x4 GetGeometryMatrix()
+    {
+        return Matrix4x4.Scale(LocalScale)
              * Matrix4x4.Translation(JointPivot);
     }
+
+    /// <summary>Matrice locale complète d'un membre isolé : T × R × S × T_pivot.</summary>
+    public Matrix4x4 GetLocalMatrix() => GetJointMatrix() * GetGeometryMatrix();
 
     public void AddChild(SceneNode child) => Children.Add(child);
 
@@ -71,68 +76,52 @@ public class SceneNode
         Vector3 hangFromTop = new(0f, -0.5f, 0f);
         Vector3 sitOnBottom = new(0f, 0.5f, 0f);
 
-        // Tailles VISIBLES (monde). Le scale du parent se multiplie avec l'enfant,
-        // donc le LocalScale enfant = tailleWanted / scaleMondeParent.
-        Vector3 torsoWorld = new(1.4f, 1.5f, 0.75f);
-        Vector3 headWorld = new(0.55f, 0.55f, 0.55f);   // cube
-        Vector3 armWorld = new(0.28f, 0.85f, 0.28f);     // bras un peu plus étroits
-        Vector3 forearmWorld = new(0.28f, 0.75f, 0.28f);
-        Vector3 thighWorld = new(0.5f, 0.95f, 0.5f);
-        Vector3 calfWorld = new(0.5f, 0.9f, 0.5f);
+        // Tailles monde directes : plus besoin de compenser, le scale n'est plus dans la pile.
+        Vector3 torso = new(1.4f, 1.5f, 0.75f);
+        Vector3 head = new(0.55f, 0.55f, 0.55f);
+        Vector3 arm = new(0.28f, 0.85f, 0.28f);
+        Vector3 forearm = new(0.28f, 0.75f, 0.28f);
+        Vector3 thigh = new(0.5f, 0.95f, 0.5f);
+        Vector3 calf = new(0.5f, 0.9f, 0.5f);
 
-        // Palette du personnage : modifier ces valeurs pour changer son apparence.
-        Vector3 skinColor = new(0.65f, 0.40f, 0.28f); 
-        Vector3 shirtColor = new(1.0f, 0.40f, 0.70f); 
-        Vector3 pantsColor = new(0.0f, 0.85f, 0.90f); 
+        Vector3 skinColor = new(0.65f, 0.40f, 0.28f);
+        Vector3 shirtColor = new(1.0f, 0.40f, 0.70f);
+        Vector3 pantsColor = new(0.0f, 0.85f, 0.90f);
 
-        SceneNode torso = new("Torso", Vector3.Zero, Vector3.Zero, torsoWorld, center) { Color = shirtColor };
+        SceneNode torsoNode = new("Torso", Vector3.Zero, Vector3.Zero, torso, center) { Color = shirtColor };
 
-        torso.AddChild(new SceneNode(
-            "Head", new Vector3(0f, 0.5f, 0f), Vector3.Zero,
-            Divide(headWorld, torsoWorld), sitOnBottom) { Color = skinColor });
+        // Positions dans l'espace d'articulation du parent (sans son scale).
+        torsoNode.AddChild(new SceneNode(
+            "Head", new Vector3(0f, torso.Y * 0.5f, 0f), Vector3.Zero, head, sitOnBottom) { Color = skinColor });
 
-        // Accroché à l'extérieur du torse : bord (0.5) + demi-largeur du bras
-        // (sinon la moitié du bras rentre dans le volume du torse).
-        float shoulderX = 0.5f + (armWorld.X * 0.5f) / torsoWorld.X;
+        float shoulderX = torso.X * 0.5f + arm.X * 0.5f;
+        float shoulderY = torso.Y * 0.38f;
 
         SceneNode leftUpperArm = new(
-            "LeftUpperArm", new Vector3(-shoulderX, 0.5f, 0f), Vector3.Zero,
-            Divide(armWorld, torsoWorld), hangFromTop) { Color = skinColor };
+            "LeftUpperArm", new Vector3(-shoulderX, shoulderY, 0f), Vector3.Zero, arm, hangFromTop) { Color = skinColor };
         leftUpperArm.AddChild(new SceneNode(
-            "LeftForearm", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
-            Divide(forearmWorld, armWorld), hangFromTop) { Color = skinColor });
-        torso.AddChild(leftUpperArm);
+            "LeftForearm", new Vector3(0f, -arm.Y, 0f), Vector3.Zero, forearm, hangFromTop) { Color = skinColor });
+        torsoNode.AddChild(leftUpperArm);
 
         SceneNode rightUpperArm = new(
-            "RightUpperArm", new Vector3(shoulderX, 0.5f, 0f), Vector3.Zero,
-            Divide(armWorld, torsoWorld), hangFromTop) { Color = skinColor };
+            "RightUpperArm", new Vector3(shoulderX, shoulderY, 0f), Vector3.Zero, arm, hangFromTop) { Color = skinColor };
         rightUpperArm.AddChild(new SceneNode(
-            "RightForearm", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
-            Divide(forearmWorld, armWorld), hangFromTop) { Color = skinColor });
-        torso.AddChild(rightUpperArm);
+            "RightForearm", new Vector3(0f, -arm.Y, 0f), Vector3.Zero, forearm, hangFromTop) { Color = skinColor });
+        torsoNode.AddChild(rightUpperArm);
 
+        float hipX = 0.31f;
         SceneNode leftThigh = new(
-            "LeftThigh", new Vector3(-0.22f, -0.5f, 0f), Vector3.Zero,
-            Divide(thighWorld, torsoWorld), hangFromTop) { Color = pantsColor };
+            "LeftThigh", new Vector3(-hipX, -torso.Y * 0.5f, 0f), Vector3.Zero, thigh, hangFromTop) { Color = pantsColor };
         leftThigh.AddChild(new SceneNode(
-            "LeftCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
-            Divide(calfWorld, thighWorld), hangFromTop) { Color = pantsColor });
-        torso.AddChild(leftThigh);
+            "LeftCalf", new Vector3(0f, -thigh.Y, 0f), Vector3.Zero, calf, hangFromTop) { Color = pantsColor });
+        torsoNode.AddChild(leftThigh);
 
         SceneNode rightThigh = new(
-            "RightThigh", new Vector3(0.22f, -0.5f, 0f), Vector3.Zero,
-            Divide(thighWorld, torsoWorld), hangFromTop) { Color = pantsColor };
+            "RightThigh", new Vector3(hipX, -torso.Y * 0.5f, 0f), Vector3.Zero, thigh, hangFromTop) { Color = pantsColor };
         rightThigh.AddChild(new SceneNode(
-            "RightCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
-            Divide(calfWorld, thighWorld), hangFromTop) { Color = pantsColor });
-        torso.AddChild(rightThigh);
+            "RightCalf", new Vector3(0f, -thigh.Y, 0f), Vector3.Zero, calf, hangFromTop) { Color = pantsColor });
+        torsoNode.AddChild(rightThigh);
 
-        return torso;
+        return torsoNode;
     }
-
-    /// <summary>Scale local pour obtenir desiredWorld malgré le scale déjà appliqué par le parent.</summary>
-    private static Vector3 Divide(Vector3 desiredWorld, Vector3 parentWorld) =>
-        new(desiredWorld.X / parentWorld.X,
-            desiredWorld.Y / parentWorld.Y,
-            desiredWorld.Z / parentWorld.Z);
 }
