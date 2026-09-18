@@ -4,7 +4,7 @@ namespace HumanGL.Rendering;
 // Les calculs pourront ensuite utiliser notre bibliothèque mathématique.
 public sealed class OrbitCamera
 {
-    private const float Distance = 3.0f;
+    private const float Distance = 6.0f;
     private const float RotationSpeed = MathF.PI / 2; // 90 degrés par seconde.
     private const float MaxElevation = 80 * MathF.PI / 180;
 

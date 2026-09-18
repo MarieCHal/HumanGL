@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="OpenTK" Version="4.9.4" />
+    <!-- MathCheck est un exe console séparé ; ne pas le compiler dans l'app OpenGL. -->
+    <Compile Remove="MathCheck/**" />
     <None Update="Shaders/*.vert;Shaders/*.frag"
           CopyToOutputDirectory="PreserveNewest"
           CopyToPublishDirectory="PreserveNewest" />
