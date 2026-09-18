@@ -121,7 +121,8 @@ public class SceneNode
 
         SceneNode rightThigh = new(
             "RightThigh", new Vector3(0.22f, -0.5f, 0f), Vector3.Zero,
-            Divide(thighWorld, torsoWorld), hangFromTop) { Color = pantsColor };        rightThigh.AddChild(new SceneNode(
+            Divide(thighWorld, torsoWorld), hangFromTop) { Color = pantsColor };
+        rightThigh.AddChild(new SceneNode(
             "RightCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
             Divide(calfWorld, thighWorld), hangFromTop) { Color = pantsColor });
         torso.AddChild(rightThigh);
