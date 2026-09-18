@@ -122,26 +122,28 @@ public class HumanGLWindow : GameWindow
         if (_cube != null && _character != null)
         {
             _stack.Init();
-            RenderNode(_character);
+            RenderNode(_character, new Mathematics.Vector3(1f, 1f, 1f));
         }
 
         SwapBuffers();
     }
 
     /// <summary>
-    /// Pile = T × R × S. Les enfants héritent du scale du parent.
+    /// Pile avec S hérité (resize enfants OK) + sandwich anti-cisaillement.
+    /// parentAccumScale = produit des scales des ancêtres.
     /// Pivot uniquement au Draw.
     /// </summary>
-    private void RenderNode(SceneNode node)
+    private void RenderNode(SceneNode node, Mathematics.Vector3 parentAccumScale)
     {
         _stack.Push();
-        _stack.Multiply(node.GetStackMatrix());
+        _stack.Multiply(node.GetStackMatrix(parentAccumScale));
 
         Matrix4x4 model = _stack.GetCurrent() * node.GetPivotMatrix();
         _cube!.Draw(model.ToColumnMajorArray(), _camera.ViewMatrix, _projection, node.Color);
 
+        Mathematics.Vector3 childAccum = node.AccumScaleForChildren(parentAccumScale);
         foreach (SceneNode child in node.Children)
-            RenderNode(child);
+            RenderNode(child, childAccum);
 
         _stack.Pop();
     }

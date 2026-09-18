@@ -34,21 +34,29 @@ public class SceneNode
     }
 
     /// <summary>
-    /// Matrice poussée sur la pile : T × R × S.
-    /// Le scale est dans la stack → les enfants héritent de la taille du parent.
-    /// Le pivot géométrie est appliqué seulement au dessin.
+    /// Matrice poussée sur la pile.
+    /// parentAccumScale = produit des LocalScale des ancêtres (1,1,1 à la racine).
+    ///
+    /// Sandwich : T × S_accum⁻¹ × R × S_accum × S_local
+    /// - S reste dans la pile (resize : les enfants suivent).
+    /// - S⁻¹…S autour de R évite le cisaillement au pli.
     /// </summary>
-    public Matrix4x4 GetStackMatrix()
+    public Matrix4x4 GetStackMatrix(Vector3 parentAccumScale)
     {
         return Matrix4x4.Translation(LocalPosition)
+             * Matrix4x4.InverseScale(parentAccumScale)
              * Matrix4x4.RotationXYZ(LocalRotation)
+             * Matrix4x4.Scale(parentAccumScale)
              * Matrix4x4.Scale(LocalScale);
     }
 
-    public Matrix4x4 GetPivotMatrix() => Matrix4x4.Translation(JointPivot);
+    /// <summary>Scale accumulé à transmettre aux enfants (ancêtres × local).</summary>
+    public Vector3 AccumScaleForChildren(Vector3 parentAccumScale) =>
+        new(parentAccumScale.X * LocalScale.X,
+            parentAccumScale.Y * LocalScale.Y,
+            parentAccumScale.Z * LocalScale.Z);
 
-    /// <summary>Matrice locale complète : T × R × S × T_pivot.</summary>
-    public Matrix4x4 GetLocalMatrix() => GetStackMatrix() * GetPivotMatrix();
+    public Matrix4x4 GetPivotMatrix() => Matrix4x4.Translation(JointPivot);
 
     public void AddChild(SceneNode child) => Children.Add(child);
 

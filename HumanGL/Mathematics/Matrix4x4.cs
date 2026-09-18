@@ -51,6 +51,20 @@ public struct Matrix4x4
     }
 
     /// <summary>
+    /// Inverse du scale : (1/sx, 1/sy, 1/sz).
+    /// Sert au sandwich anti-cisaillement : T × S⁻¹ × R × S × …
+    /// </summary>
+    public static Matrix4x4 InverseScale(Vector3 scale)
+    {
+        return Scale(new Vector3(
+            1f / NonZero(scale.X),
+            1f / NonZero(scale.Y),
+            1f / NonZero(scale.Z)));
+    }
+
+    private static float NonZero(float value) => MathF.Abs(value) < 1e-6f ? 1e-6f : value;
+
+    /// <summary>
     /// Produit A × B : chaque case = ligne de A · colonne de B.
     /// Attention : A × B ≠ B × A (ordre important pour TRS).
     /// </summary>
