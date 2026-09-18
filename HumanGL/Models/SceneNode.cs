@@ -72,9 +72,9 @@ public class SceneNode
         // donc le LocalScale enfant = tailleWanted / scaleMondeParent.
         Vector3 torsoWorld = new(1.4f, 1.5f, 0.75f);
         Vector3 headWorld = new(0.55f, 0.55f, 0.55f);   // cube
-        Vector3 armWorld = new(0.35f, 0.85f, 0.35f);     // bras = avant-bras (largeur)
-        Vector3 forearmWorld = new(0.35f, 0.75f, 0.35f);
-        Vector3 thighWorld = new(0.5f, 0.95f, 0.5f);     // cuisse = tibia (largeur)
+        Vector3 armWorld = new(0.28f, 0.85f, 0.28f);     // bras un peu plus étroits
+        Vector3 forearmWorld = new(0.28f, 0.75f, 0.28f);
+        Vector3 thighWorld = new(0.5f, 0.95f, 0.5f);
         Vector3 calfWorld = new(0.5f, 0.9f, 0.5f);
 
         SceneNode torso = new("Torso", Vector3.Zero, Vector3.Zero, torsoWorld, center);
@@ -104,7 +104,7 @@ public class SceneNode
         torso.AddChild(rightUpperArm);
 
         SceneNode leftThigh = new(
-            "LeftThigh", new Vector3(-0.28f, -0.5f, 0f), Vector3.Zero,
+            "LeftThigh", new Vector3(-0.22f, -0.5f, 0f), Vector3.Zero,
             Divide(thighWorld, torsoWorld), hangFromTop);
         leftThigh.AddChild(new SceneNode(
             "LeftCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero,
@@ -112,7 +112,7 @@ public class SceneNode
         torso.AddChild(leftThigh);
 
         SceneNode rightThigh = new(
-            "RightThigh", new Vector3(0.28f, -0.5f, 0f), Vector3.Zero,
+            "RightThigh", new Vector3(0.22f, -0.5f, 0f), Vector3.Zero,
             Divide(thighWorld, torsoWorld), hangFromTop);
         rightThigh.AddChild(new SceneNode(
             "RightCalf", new Vector3(0f, -0.5f, 0f), Vector3.Zero,

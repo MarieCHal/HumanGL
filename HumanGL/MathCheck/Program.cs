@@ -78,17 +78,22 @@ Check("Marche : bras opposés, angle de 30° au sommet du sinus", () =>
         && Near(right.LocalRotation.X, -30f);
 });
 
-Check("Saut : le torse monte, puis retombe et revient en idle", () =>
+Check("Saut : crouch puis vol, puis retour idle", () =>
 {
     SceneNode torso = SceneNode.InitCharacter();
     var animator = new Animator();
     animator.SetState(AnimState.Jump);
-    animator.Update(torso, 0f, 0.1f);
+
+    animator.Update(torso, 0f, 0.15f);
+    bool crouched = torso.LocalPosition.Y < 0f
+        && torso.FindNode("LeftThigh")!.LocalRotation.X < -20f;
+
+    animator.Update(torso, 0f, 0.3f);
     bool goingUp = torso.LocalPosition.Y > 0.4f;
 
     animator.Update(torso, 0f, 2f);
     bool landed = animator.State == AnimState.Idle && Near(torso.LocalPosition.Y, 0f);
-    return goingUp && landed;
+    return crouched && goingUp && landed;
 });
 
 Console.WriteLine();

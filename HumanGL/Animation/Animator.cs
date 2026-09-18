@@ -21,6 +21,7 @@ public class Animator
     const float JumpImpulse = 5f;
     const float Gravity = 9.81f;
     const float GroundY = 0f;
+    const float CrouchDuration = 0.28f; // fléchit les genoux avant de décoller
 
     public AnimState State { get; private set; } = AnimState.Idle;
 
@@ -65,11 +66,10 @@ public class Animator
         SetRotationX(root, "LeftThigh", -walkAngle);
         SetRotationX(root, "RightThigh", walkAngle);
 
-        // Coudes un peu pliés, toujours dans le même sens
-        SetRotationX(root, "LeftForearm", MathF.Abs(walkAngle) * 0.5f);
-        SetRotationX(root, "RightForearm", MathF.Abs(walkAngle) * 0.5f);
+        // Coudes vers l'avant, genoux vers l'arrière (sens opposés).
+        SetRotationX(root, "LeftForearm", -MathF.Abs(walkAngle) * 0.5f);
+        SetRotationX(root, "RightForearm", -MathF.Abs(walkAngle) * 0.5f);
 
-        // Genoux : le mollet reste un peu en arrière par rapport à la cuisse
         SetRotationX(root, "LeftCalf", MathF.Abs(walkAngle) * 0.6f);
         SetRotationX(root, "RightCalf", MathF.Abs(walkAngle) * 0.6f);
 
@@ -80,8 +80,24 @@ public class Animator
     {
         JumpElapsed += deltaTime;
 
-        // y(t) = y0 + v0*t - 0.5*g*t²
-        float y = GroundY + JumpImpulse * JumpElapsed - 0.5f * Gravity * JumpElapsed * JumpElapsed;
+        // 1) Accroupissement au sol : genoux pliés, légère descente du torse
+        if (JumpElapsed < CrouchDuration)
+        {
+            float crouch = JumpElapsed / CrouchDuration; // 0 → 1
+            root.LocalPosition = new Vector3(root.LocalPosition.X, GroundY - 0.2f * crouch, root.LocalPosition.Z);
+
+            SetRotationX(root, "LeftThigh", -55f * crouch);
+            SetRotationX(root, "RightThigh", -55f * crouch);
+            SetRotationX(root, "LeftCalf", 75f * crouch);
+            SetRotationX(root, "RightCalf", 75f * crouch);
+            SetRotationX(root, "LeftUpperArm", 20f * crouch);
+            SetRotationX(root, "RightUpperArm", 20f * crouch);
+            return;
+        }
+
+        // 2) Vol : chronomètre du décollage seulement (après le crouch)
+        float flightTime = JumpElapsed - CrouchDuration;
+        float y = GroundY + JumpImpulse * flightTime - 0.5f * Gravity * flightTime * flightTime;
 
         if (y <= GroundY)
         {
@@ -93,8 +109,10 @@ public class Animator
         }
 
         root.LocalPosition = new Vector3(root.LocalPosition.X, y, root.LocalPosition.Z);
-        SetRotationX(root, "LeftThigh", -45f);
-        SetRotationX(root, "RightThigh", -45f);
+        SetRotationX(root, "LeftThigh", -35f);
+        SetRotationX(root, "RightThigh", -35f);
+        SetRotationX(root, "LeftCalf", 50f);
+        SetRotationX(root, "RightCalf", 50f);
     }
 
     private static void ResetPose(SceneNode node)
