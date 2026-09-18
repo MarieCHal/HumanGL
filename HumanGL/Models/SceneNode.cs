@@ -81,9 +81,9 @@ public class SceneNode
         Vector3 calfWorld = new(0.5f, 0.9f, 0.5f);
 
         // Palette du personnage : modifier ces valeurs pour changer son apparence.
-        Vector3 skinColor = new(1.0f, 0.77f, 0.65f);
-        Vector3 shirtColor = new(0.13f, 0.53f, 0.13f);
-        Vector3 pantsColor = new(0.04f, 0.37f, 0.64f);
+        Vector3 skinColor = new(0.65f, 0.40f, 0.28f); 
+        Vector3 shirtColor = new(1.0f, 0.40f, 0.70f); 
+        Vector3 pantsColor = new(0.0f, 0.85f, 0.90f); 
 
         SceneNode torso = new("Torso", Vector3.Zero, Vector3.Zero, torsoWorld, center) { Color = shirtColor };
 
