@@ -40,7 +40,7 @@ public class Animator
     /// time : temps global, pour la marche (sin).
     /// deltaTime : temps depuis la frame précédente, pour le saut (gravité).
     /// </summary>
-    public void Update(SceneNode root, float time, float deltaTime)
+    public void Update(Limb root, float time, float deltaTime)
     {
         switch (State)
         {
@@ -56,7 +56,7 @@ public class Animator
         }
     }
 
-    private static void UpdateWalk(SceneNode root, float time)
+    private static void UpdateWalk(Limb root, float time)
     {
         // sin oscille entre -1 et 1 → angle entre -30° et +30°
         float walkAngle = MathF.Sin(time * WalkSpeed) * WalkAmplitude;
@@ -76,7 +76,7 @@ public class Animator
         root.LocalPosition = new Vector3(root.LocalPosition.X, GroundY, root.LocalPosition.Z);
     }
 
-    private void UpdateJump(SceneNode root, float deltaTime)
+    private void UpdateJump(Limb root, float deltaTime)
     {
         JumpElapsed += deltaTime;
 
@@ -120,13 +120,13 @@ public class Animator
         SetRotationX(root, "RightForearm", -45f);
     }
 
-    private static void ResetPose(SceneNode node)
+    private static void ResetPose(Limb node)
     {
         node.LocalRotation = Vector3.Zero;
         if (node.Name == "Torso")
             node.LocalPosition = Vector3.Zero;
 
-        foreach (SceneNode child in node.Children)
+        foreach (Limb child in node.Children)
             ResetPose(child);
     }
 
@@ -134,9 +134,9 @@ public class Animator
     /// Vector3 est un struct : on ne peut pas écrire node.LocalRotation.X = …,
     /// ça modifierait une copie. On remplace tout le vecteur.
     /// </summary>
-    private static void SetRotationX(SceneNode root, string name, float degrees)
+    private static void SetRotationX(Limb root, string name, float degrees)
     {
-        SceneNode? node = root.FindNode(name);
+        Limb? node = root.FindNode(name);
         if (node == null)
             return;
 

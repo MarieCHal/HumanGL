@@ -13,7 +13,7 @@ namespace HumanGL;
 public class HumanGLWindow : GameWindow
 {
     private CubeRenderer? _cube;
-    private SceneNode? _character;
+    private Limb? _character;
     private readonly Animator _animator = new();
     private readonly MatrixStack _stack = new();
     private readonly OrbitCamera _camera = new();
@@ -48,7 +48,7 @@ public class HumanGLWindow : GameWindow
         UpdateProjection(FramebufferSize.X, FramebufferSize.Y);
 
         _cube = new CubeRenderer();
-        _character = SceneNode.InitCharacter();
+        _character = Limb.InitCharacter();
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
@@ -132,7 +132,7 @@ public class HumanGLWindow : GameWindow
     /// Pile = T × R × S. Les enfants héritent du scale du parent.
     /// Pivot uniquement au Draw.
     /// </summary>
-    private void RenderNode(SceneNode node)
+    private void RenderNode(Limb node)
     {
         _stack.Push();
         _stack.Multiply(node.GetStackMatrix());
@@ -140,7 +140,7 @@ public class HumanGLWindow : GameWindow
         Matrix4x4 model = _stack.GetCurrent() * node.GetPivotMatrix();
         _cube!.Draw(model.ToColumnMajorArray(), _camera.ViewMatrix, _projection, node.Color);
 
-        foreach (SceneNode child in node.Children)
+        foreach (Limb child in node.Children)
             RenderNode(child);
 
         _stack.Pop();
