@@ -6,7 +6,7 @@
 |-------------------|------|
 | `Matrix4x4.cs`    | Calculs matriciels purs (prévoir un fichier `Vector3.cs` adjacent ou intégré) |
 | `MatrixStack.cs`  | Pile LIFO pour la propagation des transformations |
-| `SceneNode.cs`    | Nœud de l'arbre hiérarchique avec calcul de la matrice locale `T × R × S` |
+| `Limb.cs`         | Membre de l'arbre hiérarchique avec calcul de la matrice locale `T × R × S` |
 | `Animator.cs`     | Machine à états et équations de mouvement (`sin`, gravité) |
 
 ## Périmètre Pipeline Graphique
