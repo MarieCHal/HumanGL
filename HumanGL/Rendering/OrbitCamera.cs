@@ -9,7 +9,7 @@ public sealed class OrbitCamera
     private const float Distance = 6.0f;
     private const float RotationSpeed = MathF.PI / 2; // 90 degrés par seconde.
 
-    private float _horizontalAngle = 0f;
+    private float _horizontalAngle = MathF.PI / 3;
     private float _elevation = 0f;
 
     // Matrice de vue rangée colonne par colonne, comme attendu par notre shader.
@@ -23,13 +23,9 @@ public sealed class OrbitCamera
     // horizontal et vertical valent -1, 0 ou 1 selon les flèches maintenues.
     public void Rotate(float horizontal, float vertical, double elapsedSeconds)
     {
-        // Le temps écoulé rend la vitesse indépendante du nombre d'images par seconde.
-        // Limiter un pas à 0.1 s évite un grand saut après une pause de l'application.
         float step = RotationSpeed * (float)Math.Clamp(elapsedSeconds, 0, 0.1);
-        // Ramener les angles modulo un tour permet de tourner sans limite
-        // tout en évitant de perdre en précision avec des angles trop grands.
-        _horizontalAngle = MathF.IEEERemainder(_horizontalAngle + horizontal * step, 2 * MathF.PI);
-        _elevation = MathF.IEEERemainder(_elevation + vertical * step, 2 * MathF.PI);
+        _horizontalAngle += horizontal * step;
+        _elevation += vertical * step;
         UpdateView();
     }
 

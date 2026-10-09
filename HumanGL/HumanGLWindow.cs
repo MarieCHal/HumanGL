@@ -41,11 +41,10 @@ public class HumanGLWindow : GameWindow
     {
         // Appelle la méthode de GameWindow, qui déclenche l'événement Load.
         base.OnLoad();
-        GL.ClearColor(0.1f, 0.1f, 0.15f, 1.0f);
         // Les surfaces proches cachent les surfaces situées derrière elles.
         GL.Enable(EnableCap.DepthTest);
-        UpdateProjection(FramebufferSize.X, FramebufferSize.Y);
 
+        UpdateProjection(FramebufferSize.X, FramebufferSize.Y);
         _cube = new CubeRenderer();
         _character = Limb.InitCharacter();
         PrintControls();
@@ -183,22 +182,32 @@ public class HumanGLWindow : GameWindow
         UpdateProjection(args.Width, args.Height);
     }
 
+    // Adapte la zone de dessin et la perspective a la taille de la fenetre.
     private void UpdateProjection(int width, int height)
     {
         GL.Viewport(0, 0, width, height);
         if (width <= 0 || height <= 0)
             return;
 
-        const float focalLength = 1.732051f;
-        const float near = 0.1f;
-        const float far = 50.0f;
         float aspectRatio = (float)width / height;
+
+        // Facteur de perspective pour un angle de vision vertical de 60 degres.
+        const float focalLength = 1.7f;
+        // Limite visible la plus proche de la camera.
+        const float nearClipDistance = 0.1f;
+        // Limite visible la plus eloignee de la camera.
+        const float farClipDistance = 50.0f;
+        // Remet toutes les cases de la matrice a zero.
         Array.Clear(_projection);
+        // Perspective horizontale, adaptee aux proportions de la fenetre.
         _projection[0] = focalLength / aspectRatio;
+        // Perspective verticale.
         _projection[5] = focalLength;
-        _projection[10] = -(far + near) / (far - near);
+        // Convertit la profondeur entre les deux limites pour OpenGL.
+        _projection[10] = -(farClipDistance + nearClipDistance) / (farClipDistance - nearClipDistance);
+        // Prepare la division par la distance : loin = plus petit.
         _projection[11] = -1;
-        _projection[14] = -(2 * far * near) / (far - near);
-        _projection[15] = 0;
+        // Complete le calcul de profondeur avec les deux limites.
+        _projection[14] = -(2 * farClipDistance * nearClipDistance) / (farClipDistance - nearClipDistance);
     }
 }

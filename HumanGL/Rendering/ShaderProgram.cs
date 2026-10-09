@@ -58,15 +58,10 @@ public sealed class ShaderProgram : IDisposable
     // Le programme doit être actif (Use) avant l'envoi d'une matrice.
     public void SetMatrix4(string name, float[] values)
     {
-        if (values.Length != 16)
-            throw new ArgumentException("Une matrice 4x4 doit contenir 16 valeurs.", nameof(values));
-
         // Cherche l'emplacement de la variable uniform nommée dans le shader (-1 si absente ou inactive).
         int location = GL.GetUniformLocation(_handle, name);
         if (location == -1)
             throw new InvalidOperationException($"Matrice introuvable dans le shader : {name}");
-
-        // false : les valeurs sont déjà rangées colonne par colonne pour GLSL.
         // Envoie une matrice 4x4 à cet emplacement dans le programme actif, sans la transposer.
         GL.UniformMatrix4(location, 1, false, values);
     }
