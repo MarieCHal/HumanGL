@@ -6,7 +6,8 @@ Le projet comprend une bibliothèque mathématique maison, un squelette hiérarc
 
 ## Prérequis
 
-- **SDK .NET 8** (le runtime seul ne suffit pas).
+- **SDK .NET 8**, installé automatiquement par `make install` s’il manque.
+- **curl** et **bash** pour installer automatiquement le SDK (macOS/Linux).
 - **make** pour utiliser les commandes du Makefile.
 - Un environnement graphique compatible avec **OpenGL 4.1**.
 - Une connexion Internet pour télécharger les dépendances lorsqu’elles ne sont pas déjà en cache.
@@ -28,14 +29,14 @@ make install
 make
 ```
 
-`make install` vérifie la présence du SDK .NET 8 et restaure les packages NuGet, dont OpenTK et ses dépendances. Le SDK doit être installé au préalable.
+`make install` installe le SDK .NET 8 s’il manque, puis restaure les packages NuGet, dont OpenTK et ses dépendances. Le SDK est téléchargé avec le [script officiel Microsoft](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script) dans `.dotnet/`, sans droits administrateur. Les commandes du Makefile utilisent automatiquement ce SDK local lorsqu’il est présent.
 
 `make` compile le projet puis ouvre une fenêtre **HumanGL** de **800 × 600**, avec le personnage sur un fond sombre. Les dépendances sont également restaurées au lancement si nécessaire.
 
 | Commande | Action |
 | --- | --- |
 | `make` ou `make run` | Compiler et lancer l’application. |
-| `make install` | Restaurer les dépendances NuGet. |
+| `make install` | Installer le SDK .NET 8 si nécessaire et restaurer les dépendances NuGet. |
 | `make build` | Compiler sans ouvrir la fenêtre. |
 | `make clean` | Nettoyer les fichiers générés par la compilation. |
 

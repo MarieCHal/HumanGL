@@ -1,19 +1,27 @@
 .DEFAULT_GOAL := run
 
 PROJECT := HumanGL/HumanGL.csproj
+DOTNET_DIR := $(CURDIR)/.dotnet
+DOTNET = $(if $(wildcard $(DOTNET_DIR)/dotnet),$(DOTNET_DIR)/dotnet,dotnet)
 
 .PHONY: run install build clean
 
 run:
-	dotnet run --project $(PROJECT)
+	"$(DOTNET)" run --project $(PROJECT)
 
 install:
-	@command -v dotnet >/dev/null 2>&1 || { echo "Installez le SDK .NET 8, puis relancez make install."; exit 1; }
-	@dotnet --list-sdks | grep -q '^8\.' || { echo "Le SDK .NET 8 est requis. Installez-le, puis relancez make install."; exit 1; }
-	dotnet restore $(PROJECT)
+	@set -eu; \
+	if ! "$(DOTNET)" --list-sdks 2>/dev/null | grep -q '^8\.'; then \
+		command -v curl >/dev/null 2>&1 || { echo "curl est requis pour télécharger le SDK .NET 8."; exit 1; }; \
+		echo "Installation du SDK .NET 8 dans $(DOTNET_DIR)..."; \
+		mkdir -p "$(DOTNET_DIR)"; \
+		curl --fail --silent --show-error --location https://dot.net/v1/dotnet-install.sh -o "$(DOTNET_DIR)/dotnet-install.sh"; \
+		bash "$(DOTNET_DIR)/dotnet-install.sh" --channel 8.0 --install-dir "$(DOTNET_DIR)" --no-path; \
+	fi
+	"$(DOTNET)" restore $(PROJECT)
 
 build:
-	dotnet build $(PROJECT)
+	"$(DOTNET)" build $(PROJECT)
 
 clean:
-	dotnet clean $(PROJECT)
+	"$(DOTNET)" clean $(PROJECT)
