@@ -1,17 +1,15 @@
 #version 410 core
 
-// Fragment shader : programme execute par la carte graphique pour calculer
-// la couleur d'un fragment (un morceau de triangle pouvant contribuer a un pixel).
+// Calcule la couleur de chaque fragment.
 
-// Couleur RGB du membre, envoyee depuis le C# avant chaque dessin.
-// Toutes les faces de ce membre utilisent cette meme couleur.
+// Couleur du membre envoyee par le C#.
 uniform vec3 objectColor;
 
-// Couleur de sortie : rouge, vert, bleu et alpha (opacite).
+// Couleur finale (RGB et opacite).
 out vec4 color;
 
 void main()
 {
-    // Applique la couleur du membre, avec une opacite de 1.0.
+    // Opacite maximale : 1.0.
     color = vec4(objectColor, 1.0);
 }

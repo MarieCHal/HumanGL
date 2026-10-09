@@ -31,11 +31,8 @@ public class HumanGLWindow : GameWindow
     public HumanGLWindow() : base(GameWindowSettings.Default, new NativeWindowSettings
     {
         Title = "HumanGL",
-        //TODO
         ClientSize = new Vector2i(800, 600),
         APIVersion = new Version(4, 1),
-        Profile = ContextProfile.Core,
-        Flags = ContextFlags.ForwardCompatible
     })
     {
     }
@@ -44,7 +41,6 @@ public class HumanGLWindow : GameWindow
     {
         // Appelle la méthode de GameWindow, qui déclenche l'événement Load.
         base.OnLoad();
-        VSync = VSyncMode.On;
         GL.ClearColor(0.1f, 0.1f, 0.15f, 1.0f);
         // Les surfaces proches cachent les surfaces situées derrière elles.
         GL.Enable(EnableCap.DepthTest);
