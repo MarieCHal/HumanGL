@@ -29,15 +29,25 @@ Une version `8.0.xxx` doit apparaître. Si la commande `dotnet` est introuvable,
 
 ### Démarrer l’application
 
+Pour installer les dépendances NuGet du projet (OpenTK et ses dépendances), lancez depuis la racine :
+
+```sh
+make install
+```
+
+Cette commande vérifie la présence du SDK .NET 8 puis restaure les packages. Le SDK doit être installé au préalable ; une connexion Internet est nécessaire si les packages ne sont pas déjà en cache.
+
 1. Ouvrez le dossier du projet dans votre éditeur.
 2. Ouvrez un terminal à la **racine du dépôt**, dans le dossier qui contient ce `README.md` et le dossier `HumanGL`.
 3. Lancez la commande suivante :
 
    ```sh
-   dotnet run --project HumanGL/HumanGL.csproj
+   make
    ```
 
 Cette commande télécharge les dépendances si nécessaire, compile le projet puis ouvre la fenêtre. Il n’est pas nécessaire d’installer OpenTK manuellement.
+
+Le Makefile nécessite `make` et le SDK .NET 8. Vous pouvez aussi lancer directement `dotnet run --project HumanGL/HumanGL.csproj`.
 
 Si votre terminal est déjà dans le sous-dossier `HumanGL`, utilisez simplement :
 
@@ -62,7 +72,7 @@ Le cube reste immobile et centré : c'est la caméra qui se déplace, à une dis
 Depuis la racine du dépôt :
 
 ```sh
-dotnet build HumanGL/HumanGL.csproj
+make build
 ```
 
 ## Organisation du code
