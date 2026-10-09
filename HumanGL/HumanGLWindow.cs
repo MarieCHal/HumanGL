@@ -19,7 +19,6 @@ public class HumanGLWindow : GameWindow
     private readonly OrbitCamera _camera = new();
     private readonly float[] _projection = new float[16];
     private float _time;
-    private string _scaleTarget = "LeftUpperArm";
     private const float ScaleStep = 0.15f;
     private static readonly string[] ScaleTargets =
     [
@@ -27,10 +26,12 @@ public class HumanGLWindow : GameWindow
         "LeftThigh", "LeftCalf", "RightUpperArm", "RightForearm"
     ];
     private int _scaleTargetIndex = 2;
+    private string ScaleTarget => ScaleTargets[_scaleTargetIndex];
 
     public HumanGLWindow() : base(GameWindowSettings.Default, new NativeWindowSettings
     {
         Title = "HumanGL",
+        //TODO
         ClientSize = new Vector2i(800, 600),
         APIVersion = new Version(4, 1),
         Profile = ContextProfile.Core,
@@ -41,9 +42,11 @@ public class HumanGLWindow : GameWindow
 
     protected override void OnLoad()
     {
+        // Appelle la méthode de GameWindow, qui déclenche l'événement Load.
         base.OnLoad();
         VSync = VSyncMode.On;
         GL.ClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+        // Les surfaces proches cachent les surfaces situées derrière elles.
         GL.Enable(EnableCap.DepthTest);
         UpdateProjection(FramebufferSize.X, FramebufferSize.Y);
 
@@ -77,7 +80,15 @@ public class HumanGLWindow : GameWindow
             return;
         }
 
-        // Animations : I = idle, W = marche, Espace = saut
+        HandleAnimationInput();
+        HandleMemberScaling();
+        UpdateAnimation((float)args.Time);
+        HandleCameraInput(args.Time);
+    }
+
+    private void HandleAnimationInput()
+    {
+        // IsKeyPressed réagit une seule fois à chaque appui.
         if (KeyboardState.IsKeyPressed(Keys.I))
             _animator.SetState(AnimState.Idle);
         if (KeyboardState.IsKeyPressed(Keys.W))
@@ -85,52 +96,60 @@ public class HumanGLWindow : GameWindow
         if (KeyboardState.IsKeyPressed(Keys.Space))
             _animator.SetState(AnimState.Jump);
 
-        // Resize live :
-        //   T = membre suivant
-        //   R = agrandir
-        //   F = réduire
-        // La fenêtre HumanGL doit avoir le focus (cliquer dedans).
+    }
+
+    private void HandleMemberScaling()
+    {
         if (KeyboardState.IsKeyPressed(Keys.T))
         {
             _scaleTargetIndex = (_scaleTargetIndex + 1) % ScaleTargets.Length;
-            _scaleTarget = ScaleTargets[_scaleTargetIndex];
-            Title = $"HumanGL — cible : {_scaleTarget}";
-            Console.WriteLine($"[scale] cible = {_scaleTarget}");
+            Title = $"HumanGL — cible : {ScaleTarget}";
+            Console.WriteLine($"[scale] cible = {ScaleTarget}");
         }
 
         if (_character != null)
         {
             if (KeyboardState.IsKeyPressed(Keys.R))
             {
-                _character.ScaleMember(_scaleTarget, +ScaleStep);
-                Title = $"HumanGL — {_scaleTarget} +";
-                Console.WriteLine($"[scale] {_scaleTarget} +{ScaleStep}");
+                _character.ScaleMember(ScaleTarget, +ScaleStep);
+                Title = $"HumanGL — {ScaleTarget} +";
+                Console.WriteLine($"[scale] {ScaleTarget} +{ScaleStep}");
             }
             if (KeyboardState.IsKeyPressed(Keys.F))
             {
-                _character.ScaleMember(_scaleTarget, -ScaleStep);
-                Title = $"HumanGL — {_scaleTarget} -";
-                Console.WriteLine($"[scale] {_scaleTarget} -{ScaleStep}");
+                _character.ScaleMember(ScaleTarget, -ScaleStep);
+                Title = $"HumanGL — {ScaleTarget} -";
+                Console.WriteLine($"[scale] {ScaleTarget} -{ScaleStep}");
             }
         }
 
-        float deltaTime = (float)args.Time;
+    }
+
+    private void UpdateAnimation(float deltaTime)
+    {
+        // deltaTime est le temps écoulé depuis la mise à jour précédente, en secondes.
         _time += deltaTime;
         if (_character != null)
             _animator.Update(_character, _time, deltaTime);
 
+    }
+
+    private void HandleCameraInput(double deltaTime)
+    {
+        // IsKeyDown reste vrai tant que la touche est maintenue.
         int horizontal = (KeyboardState.IsKeyDown(Keys.Right) ? 1 : 0)
                        - (KeyboardState.IsKeyDown(Keys.Left) ? 1 : 0);
         int vertical = (KeyboardState.IsKeyDown(Keys.Up) ? 1 : 0)
                      - (KeyboardState.IsKeyDown(Keys.Down) ? 1 : 0);
 
         if (horizontal != 0 || vertical != 0)
-            _camera.Rotate(horizontal, vertical, args.Time);
+            _camera.Rotate(horizontal, vertical, deltaTime);
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
     {
         base.OnRenderFrame(args);
+        // Efface l'image et les profondeurs avant de dessiner la nouvelle image.
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
         if (_cube != null && _character != null)

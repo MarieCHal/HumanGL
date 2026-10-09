@@ -9,7 +9,7 @@ public sealed class OrbitCamera
     private const float Distance = 6.0f;
     private const float RotationSpeed = MathF.PI / 2; // 90 degrés par seconde.
 
-    private float _azimuth = 0f;
+    private float _horizontalAngle = 0f;
     private float _elevation = 0f;
 
     // Matrice de vue rangée colonne par colonne, comme attendu par notre shader.
@@ -28,7 +28,7 @@ public sealed class OrbitCamera
         float step = RotationSpeed * (float)Math.Clamp(elapsedSeconds, 0, 0.1);
         // Ramener les angles modulo un tour permet de tourner sans limite
         // tout en évitant de perdre en précision avec des angles trop grands.
-        _azimuth = MathF.IEEERemainder(_azimuth + horizontal * step, 2 * MathF.PI);
+        _horizontalAngle = MathF.IEEERemainder(_horizontalAngle + horizontal * step, 2 * MathF.PI);
         _elevation = MathF.IEEERemainder(_elevation + vertical * step, 2 * MathF.PI);
         UpdateView();
     }
@@ -36,7 +36,7 @@ public sealed class OrbitCamera
     private void UpdateView()
     {
         // La caméra stocke des radians ; nos rotations attendent des degrés.
-        float azimuthDegrees = _azimuth * 180f / MathF.PI;
+        float horizontalAngleDegrees = _horizontalAngle * 180f / MathF.PI;
         float elevationDegrees = _elevation * 180f / MathF.PI;
 
         // La vue transforme la scène dans le repère de la caméra.
@@ -44,7 +44,7 @@ public sealed class OrbitCamera
         var view =
             Matrix4x4.Translation(new Vector3(0f, 0f, -Distance))
             * Matrix4x4.RotationX(elevationDegrees)
-            * Matrix4x4.RotationY(-azimuthDegrees);
+            * Matrix4x4.RotationY(-horizontalAngleDegrees);
 
         view.ToColumnMajorArray().CopyTo(ViewMatrix, 0);
     }
