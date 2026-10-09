@@ -5,16 +5,28 @@ namespace HumanGL.Rendering;
 
 public sealed class CubeRenderer : IDisposable
 {
-    private int _vao;
-    private int _vbo;
-    private readonly ShaderProgram _shader;
+    // VAO : memorise comment lire les sommets.
+    private int _vertexLayout;
+    // VBO : stocke les coordonnees des sommets sur la carte graphique.
+    private int _vertexBuffer;
+    private readonly ShaderProgram _shaderProgram;
 
     public CubeRenderer()
+    {
+        string shaderDirectory = Path.Combine(AppContext.BaseDirectory, "Shaders");
+        _shaderProgram = new ShaderProgram(
+            Path.Combine(shaderDirectory, "cube.vert"),
+            Path.Combine(shaderDirectory, "cube.frag"));
+
+        PrepareCubeVertices();
+    }
+
+    private void PrepareCubeVertices()
     {
         // Cube 1x1x1 centré à l'origine : chaque coordonnée vaut -0.5 ou +0.5.
         // 6 faces × 2 triangles × 3 sommets = 36 sommets.
         // Chaque ligne contient uniquement une position (x, y, z).
-        float[] vertices =
+        float[] vertexPositions =
         {
             // Avant (+Z).
             -0.5f, -0.5f,  0.5f,
@@ -65,56 +77,55 @@ public sealed class CubeRenderer : IDisposable
             -0.5f, -0.5f,  0.5f
         };
 
-        string shaderDirectory = Path.Combine(AppContext.BaseDirectory, "Shaders");
-        _shader = new ShaderProgram(
-            Path.Combine(shaderDirectory, "cube.vert"),
-            Path.Combine(shaderDirectory, "cube.frag"));
+        // Cree le stockage des sommets et leur configuration de lecture, vide.
+        _vertexLayout = GL.GenVertexArray();
+        _vertexBuffer = GL.GenBuffer();
+        GL.BindVertexArray(_vertexLayout);
 
-        // Les données sont envoyées au GPU une seule fois, à la création du cube.
-        // Crée un identifiant de VAO, qui mémorise la configuration des attributs des sommets.
-        _vao = GL.GenVertexArray();
-        // Crée un identifiant de buffer, qui contiendra les données des sommets (VBO).
-        _vbo = GL.GenBuffer();
-        // Active le VAO du cube pour utiliser ou configurer ses attributs de sommets.
-        GL.BindVertexArray(_vao);
-        // Sélectionne le VBO comme buffer de sommets à remplir ou à décrire.
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-        // Alloue le buffer et y copie les sommets ; StaticDraw indique des données rarement modifiées.
-        GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float),
-            vertices, BufferUsageHint.StaticDraw);
+        UploadVertexPositions(vertexPositions);
 
-        const int stride = 3 * sizeof(float);
-        // Attribut 0 : position = 3 float au début de chaque sommet ; stride sépare deux sommets.
-        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, 0);
-        // Active l'attribut 0 (position) pour le vertex shader.
+        // Chaque sommet contient 3 float : x, y, z. OpenGL demande une taille en octets
+        const int bytesPerVertex = 3 * sizeof(float);
+
+        // Entree 0 du shader : lit x, y, z depuis le debut, avec 12 octets entre sommets.
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, bytesPerVertex, 0);
         GL.EnableVertexAttribArray(0);
-        // Désactive le VAO pour éviter de modifier sa configuration par accident.
         GL.BindVertexArray(0);
     }
 
-    public void Draw(float[] model, float[] view, float[] projection, Vector3 color)
+    // Envoie les positions dans le stockage du cube sur la carte graphique.
+    private void UploadVertexPositions(float[] vertexPositions)
     {
-        _shader.Use();
-        _shader.SetMatrix4("model", model);
-        _shader.SetMatrix4("view", view);
-        _shader.SetMatrix4("projection", projection);
-        // Envoie la couleur du membre avant de dessiner le cube.
-        _shader.SetVector3("objectColor", color);
-        // Active le VAO du cube pour utiliser ou configurer ses attributs de sommets.
-        GL.BindVertexArray(_vao);
-        // Un seul appel de dessin pour tout le cube.
-        // Dessine les 36 sommets par groupes de 3 : les 12 triangles du cube.
+        // Selectionne le buffer vide.
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
+        GL.BufferData(
+            BufferTarget.ArrayBuffer,
+            vertexPositions.Length * sizeof(float),
+            vertexPositions,
+            BufferUsageHint.StaticDraw);
+    }
+
+    public void Draw(float[] modelMatrix, float[] viewMatrix, float[] projectionMatrix, Vector3 color)
+    {
+        // Active les shaders et leur transmet les matrices et la couleur.
+        _shaderProgram.Use();
+        _shaderProgram.SetMatrix4("model", modelMatrix); // position, rotation taille du membre
+        _shaderProgram.SetMatrix4("view", viewMatrix); // point de vue de la caméra
+        _shaderProgram.SetMatrix4("projection", projectionMatrix); // perspective de la caméra
+        _shaderProgram.SetVector3("objectColor", color);
+        // Selectionne les sommets du cube.
+        GL.BindVertexArray(_vertexLayout);
+        // Dessine les 12 triangles du cube en un seul appel.
         GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
     }
 
     public void Dispose()
     {
-        // Supprime le VBO et libère le stockage des sommets quand il n'est plus utilisé.
-        GL.DeleteBuffer(_vbo);
-        // Supprime le VAO qui mémorisait la configuration des sommets.
-        GL.DeleteVertexArray(_vao);
-        _vbo = 0;
-        _vao = 0;
-        _shader.Dispose();
+        // Libere les ressources de la carte graphique.
+        GL.DeleteBuffer(_vertexBuffer);
+        GL.DeleteVertexArray(_vertexLayout);
+        _vertexBuffer = 0;
+        _vertexLayout = 0;
+        _shaderProgram.Dispose();
     }
 }
