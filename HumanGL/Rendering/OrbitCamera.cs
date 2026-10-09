@@ -7,9 +7,9 @@ namespace HumanGL.Rendering;
 public sealed class OrbitCamera
 {
     private const float Distance = 6.0f;
-    private const float RotationSpeed = MathF.PI / 2; // 90 degrés par seconde.
+    private const float RotationSpeed = 90f; // 90 degrés par seconde.
 
-    private float _horizontalAngle = MathF.PI / 3;
+    private float _horizontalAngle = 60f;
     private float _elevation = 0f;
 
     // Matrice de vue rangée colonne par colonne, comme attendu par notre shader.
@@ -31,17 +31,13 @@ public sealed class OrbitCamera
 
     private void UpdateView()
     {
-        // La caméra stocke des radians ; nos rotations attendent des degrés.
-        float horizontalAngleDegrees = _horizontalAngle * 180f / MathF.PI;
-        float elevationDegrees = _elevation * 180f / MathF.PI;
-
-        // La vue transforme la scène dans le repère de la caméra.
-        // L'origine reste devant la caméra, à une distance constante.
+        // Place l'origine devant la caméra et applique les angles de vue.
         var view =
             Matrix4x4.Translation(new Vector3(0f, 0f, -Distance))
-            * Matrix4x4.RotationX(elevationDegrees)
-            * Matrix4x4.RotationY(-horizontalAngleDegrees);
+            * Matrix4x4.RotationX(_elevation)
+            * Matrix4x4.RotationY(-_horizontalAngle);
 
+        // Prépare la matrice pour le shader.
         view.ToColumnMajorArray().CopyTo(ViewMatrix, 0);
     }
 }
