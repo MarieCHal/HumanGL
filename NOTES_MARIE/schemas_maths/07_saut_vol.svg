@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="360" viewBox="0 0 420 360">
+  <rect width="100%" height="100%" fill="#f7f5f0"/>
+  <text x="20" y="32" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#222">Saut — vol</text>
+
+  <g stroke="#999" stroke-width="1.5" stroke-dasharray="4 4">
+    <line x1="56" y1="268" x2="386" y2="268"/>
+    <line x1="56" y1="268" x2="56" y2="70"/>
+  </g>
+  <text x="390" y="272" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#666">t</text>
+  <text x="64" y="66" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#666">y</text>
+
+  <polyline points="56.0,268.0 60.4,257.9 64.9,248.2 69.3,238.8 73.7,229.7 78.2,221.0 82.6,212.6 87.0,204.6 91.5,196.9 95.9,189.6 100.3,182.6 104.8,175.9 109.2,169.6 113.6,163.6 118.0,158.0 122.5,152.7 126.9,147.7 131.3,143.1 135.8,138.8 140.2,134.9 144.6,131.3 149.1,128.1 153.5,125.2 157.9,122.6 162.4,120.4 166.8,118.5 171.2,116.9 175.7,115.8 180.1,114.9 184.5,114.4 189.0,114.2 193.4,114.4 197.8,114.9 202.3,115.8 206.7,116.9 211.1,118.5 215.6,120.4 220.0,122.6 224.4,125.2 228.8,128.1 233.3,131.3 237.7,134.9 242.1,138.8 246.6,143.1 251.0,147.7 255.4,152.7 259.9,158.0 264.3,163.6 268.7,169.6 273.2,175.9 277.6,182.6 282.0,189.6 286.5,196.9 290.9,204.6 295.3,212.6 299.8,221.0 304.2,229.7 308.6,238.8 313.1,248.2 317.5,257.9 321.9,268.0" fill="none" stroke="#1a6f8a" stroke-width="2.5"/>
+  <circle cx="56.0" cy="268.0" r="4" fill="#1a6f8a"/>
+  <circle cx="189.0" cy="114.2" r="4" fill="#1a6f8a"/>
+  <circle cx="321.9" cy="268.0" r="4" fill="#1a6f8a"/>
+
+  <line x1="70.0" y1="260.0" x2="70.0" y2="232.0" stroke="#1a6f8a" stroke-width="1.5"/>
+  <polyline points="66.0,238.0 70.0,232.0 74.0,238.0" fill="none" stroke="#1a6f8a" stroke-width="1.5"/>
+  <text x="78.0" y="244.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1a6f8a">v = 5</text>
+
+  <text x="171.0" y="102.2" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1a6f8a">sommet ≈ 1,27</text>
+  <text x="259.9" y="286.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#666">sol, t ≈ 1,02 s</text>
+
+  <text x="28" y="318" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#444">y = 5t − 0,5 × 9,81 × t²</text>
+  <text x="28" y="340" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#444">t = 0 au décollage, après l'accroupissement</text>
+</svg>

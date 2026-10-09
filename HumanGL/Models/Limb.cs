@@ -2,10 +2,6 @@ using HumanGL.Mathematics;
 
 namespace HumanGL.Models;
 
-/// <summary>
-/// Un membre du bonhomme. On stocke ici la recette (position, rotation, scale),
-/// pas la matrice. La matrice est recalculée à partir de ces trois vecteurs.
-/// </summary>
 public class Limb
 {
     public string Name { get; set; }
@@ -13,12 +9,6 @@ public class Limb
     public Vector3 LocalRotation { get; set; }
     public Vector3 LocalScale { get; set; }
 
-    /// <summary>
-    /// Décalage du cube unitaire pour placer l'articulation.
-    /// (0, -0.5, 0) = joint en haut du membre (bras, jambe).
-    /// (0, +0.5, 0) = joint en bas (tête sur le cou).
-    /// (0, 0, 0) = centré (torse).
-    /// </summary>
     public Vector3 JointPivot { get; set; }
 
     public Vector3 Color { get; set; } = new(1f, 1f, 1f);
@@ -33,11 +23,6 @@ public class Limb
         JointPivot = jointPivot;
     }
 
-    /// <summary>
-    /// Matrice poussée sur la pile : T × R × S.
-    /// Le scale est dans la stack → les enfants héritent de la taille du parent.
-    /// Le pivot géométrie est appliqué seulement au dessin.
-    /// </summary>
     public Matrix4x4 GetStackMatrix()
     {
         return Matrix4x4.Translation(LocalPosition)
@@ -64,11 +49,6 @@ public class Limb
         return null;
     }
 
-    /// <summary>
-    /// Resize runtime : membre + delta (+/−) sur X, Y, Z.
-    /// Grâce au S dans la pile, les enfants grossissent et se repositionnent tout seuls
-    /// (leurs offsets sont en espace unitaire, ex. avant-bras à y = -1).
-    /// </summary>
     public bool ScaleMember(string memberName, float deltaUnits)
     {
         Limb? node = FindNode(memberName);
@@ -80,15 +60,10 @@ public class Limb
             ClampSize(node.LocalScale.Y + deltaUnits),
             ClampSize(node.LocalScale.Z + deltaUnits));
 
-        // Épaules / hanches : ratios qui dépendent des largeurs relatives.
         RefreshUnitAnchors();
         return true;
     }
 
-    /// <summary>
-    /// Accroches en espace UNITAIRE du parent (avant son scale).
-    /// Ex. avant-bras à (0,-1,0) : le S du bras l'envoie au bout et l'échelle.
-    /// </summary>
     public void RefreshUnitAnchors()
     {
         foreach (Limb child in Children)
@@ -131,11 +106,11 @@ public class Limb
         Vector3 hangFromTop = new(0f, -0.5f, 0f);
         Vector3 sitOnBottom = new(0f, 0.5f, 0f);
 
-        // Scales locaux : le S parent se multiplie avec l'enfant dans la pile.
-        // Pour une taille visible V sous un parent de scale P : local = V / P (composante par composante).
         Vector3 torso = new(1.4f, 1.5f, 0.75f);
         Vector3 head = Divide(new Vector3(0.55f, 0.55f, 0.55f), torso);
+        // Vector3 head = new Vector3(0.55f, 0.55f, 0.55f);
         Vector3 arm = Divide(new Vector3(0.28f, 0.85f, 0.28f), torso);
+
         Vector3 forearm = Divide(new Vector3(0.28f, 0.75f, 0.28f), new Vector3(0.28f, 0.85f, 0.28f));
         Vector3 thigh = Divide(new Vector3(0.5f, 0.95f, 0.5f), torso);
         Vector3 calf = Divide(new Vector3(0.5f, 0.9f, 0.5f), new Vector3(0.5f, 0.95f, 0.5f));

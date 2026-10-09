@@ -25,24 +25,52 @@ Matrice monde: où est postiionnée de manière absolue le membre dans l'espace 
 
 ## FONCTION DE GRAVITÉ (saut)
 
-Formule de la hauteur en fonction du temps :
+Pendant le vol, chaque frame recalcule la hauteur à partir du temps. Rien n'oscille. La valeur qui change de signe, c'est la vitesse. `y` reste positif pendant tout le saut, puis revient à 0.
 
 ```
-y(t) = y₀ + v₀ · t_saut − ½ · g · t_saut²
+y = GroundY + 5 × t − 0,5 × 9,81 × t²
 ```
 
-| Symbole   | Signification                                      |
-|-----------|----------------------------------------------------|
-| `y₀`      | hauteur initiale au sol                            |
-| `v₀`      | vitesse d'impulsion vers le haut (ex: 5 m/s)       |
-| `g`       | gravité (ex: 9.81 m/s²)                            |
-| `t_saut`  | chrono déclenché quand on presse la touche Saut     |
+`t` est `flightTime` : le temps depuis le décollage, donc après les 0,28 s d'accroupissement. `GroundY` vaut 0.
 
-**Logique :**
-1. Tant que `y(t) ≥ y₀` → `torso.localPosition.y = y(t)`
-2. Dès que `y(t) ≤ y₀` → atterrissage :
-   - `torso.localPosition.y = y₀`
-   - `t_saut = 0`
+| Symbole | Dans le code | Rôle |
+|---------|--------------|------|
+| `5` | `JumpImpulse` | vitesse vers le haut au décollage |
+| `9,81` | `Gravity` | ce que la gravité retire à la vitesse, par seconde |
+| `0,5` | le milieu de la droite des vitesses | pas un réglage choisi à la main |
+| `t` | `flightTime` | secondes depuis le décollage |
+
+### Les deux termes
+
+Deux termes s'additionnent :
+
+- `5t` monte en ligne droite. À `t = 1`, il vaut 5.
+- `0,5 × 9,81 × t²` tire vers le bas, et il grossit de plus en plus vite. À `t = 1`, il vaut environ 4,9.
+
+Au début, le premier gagne. Vers la fin, le second le rattrape.
+
+| t (s) | 5t | 0,5 × 9,81 × t² | y |
+|-------|-----|------------------|---|
+| 0 | 0 | 0 | 0 |
+| 0,2 | 1,0 | 0,2 | 0,8 |
+| 0,5 | 2,5 | 1,2 | 1,3 |
+| 0,8 | 4,0 | 3,1 | 0,9 |
+| 1,02 | 5,1 | 5,1 | 0 |
+
+Schéma : `NOTES_MARIE/schemas_maths/08_saut_deux_termes.svg`. L'orange est `5t`, le violet est le terme en `t²`, le trait entre les deux est `y`.
+
+### La vitesse
+
+```
+v = 5 − 9,81 × t
+```
+
+Elle dit dans quel sens on va. Elle est positive tant qu'on monte, nulle au sommet (vers 0,51 s, hauteur ≈ 1,27), puis négative pendant la descente. On ne la stocke pas : elle est déjà contenue dans la formule, puisque la hauteur est l'aire sous cette vitesse.
+
+### Atterrissage
+
+1. Tant que `y` est au-dessus de 0, le Y du torse vaut `y`.
+2. Dès que `y` repasse sous 0 : le torse revient au sol, le chronomètre repart à 0, l'état redevient l'idle.
 
 
 

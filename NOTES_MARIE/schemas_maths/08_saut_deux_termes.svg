@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="400" viewBox="0 0 840 400">
+  <rect width="100%" height="100%" fill="#f7f5f0"/>
+  <text x="20" y="32" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#222">Saut — y monte puis redescend sans oscillateur</text>
+
+  <text x="48" y="62" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#666">les deux termes</text>
+  <g stroke="#999" stroke-width="1.5" stroke-dasharray="4 4">
+    <line x1="78" y1="268" x2="398" y2="268"/>
+    <line x1="78" y1="268" x2="78" y2="78"/>
+  </g>
+  <text x="402" y="272" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#666">t</text>
+  <polyline points="78.0,268.0 85.1,263.8 92.2,259.6 99.2,255.4 106.3,251.2 113.4,247.0 120.5,242.7 127.6,238.5 134.6,234.3 141.7,230.1 148.8,225.9 155.9,221.7 162.9,217.5 170.0,213.3 177.1,209.1 184.2,204.9 191.3,200.6 198.3,196.4 205.4,192.2 212.5,188.0 219.6,183.8 226.7,179.6 233.7,175.4 240.8,171.2 247.9,167.0 255.0,162.8 262.1,158.6 269.1,154.3 276.2,150.1 283.3,145.9 290.4,141.7 297.4,137.5 304.5,133.3 311.6,129.1 318.7,124.9 325.8,120.7 332.8,116.5 339.9,112.3 347.0,108.0 354.1,103.8 361.2,99.6" fill="none" stroke="#d35400" stroke-width="2.5"/>
+  <polyline points="78.0,268.0 85.1,267.9 92.2,267.6 99.2,267.1 106.3,266.3 113.4,265.4 120.5,264.2 127.6,262.8 134.6,261.3 141.7,259.5 148.8,257.5 155.9,255.3 162.9,252.8 170.0,250.2 177.1,247.4 184.2,244.3 191.3,241.1 198.3,237.6 205.4,233.9 212.5,230.0 219.6,225.9 226.7,221.6 233.7,217.1 240.8,212.3 247.9,207.4 255.0,202.2 262.1,196.9 269.1,191.3 276.2,185.5 283.3,179.5 290.4,173.3 297.4,166.9 304.5,160.2 311.6,153.4 318.7,146.3 325.8,139.1 332.8,131.6 339.9,123.9 347.0,116.0 354.1,107.9 361.2,99.6" fill="none" stroke="#7b2cbf" stroke-width="2.5"/>
+  <line x1="219.6" y1="183.8" x2="219.6" y2="225.9" stroke="#1a6f8a" stroke-width="1.5"/>
+  <text x="225.6" y="204.9" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1a6f8a">écart = y</text>
+  <text x="48" y="300" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#d35400">5t monte en ligne droite</text>
+  <text x="48" y="320" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#7b2cbf">0,5 × 9,81 × t² rattrape, puis dépasse</text>
+  <text x="48" y="348" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#444">y = orange − violet</text>
+
+  <text x="470" y="62" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#666">leur différence</text>
+  <g stroke="#999" stroke-width="1.5" stroke-dasharray="4 4">
+    <line x1="500" y1="268" x2="800" y2="268"/>
+    <line x1="500" y1="268" x2="500" y2="78"/>
+  </g>
+  <text x="804" y="272" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#666">t</text>
+  <text x="508" y="74" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#666">y</text>
+  <polyline points="500.0,268.0 504.4,257.7 508.8,247.7 513.2,238.1 517.6,228.9 522.0,220.0 526.4,211.4 530.8,203.2 535.2,195.4 539.6,187.9 544.0,180.7 548.5,173.9 552.9,167.4 557.3,161.3 561.7,155.5 566.1,150.1 570.5,145.1 574.9,140.4 579.3,136.0 583.7,132.0 588.1,128.3 592.5,125.0 596.9,122.0 601.3,119.4 605.7,117.1 610.1,115.2 614.5,113.6 618.9,112.4 623.3,111.5 627.7,111.0 632.1,110.8 636.5,111.0 640.9,111.5 645.4,112.4 649.8,113.6 654.2,115.2 658.6,117.1 663.0,119.4 667.4,122.0 671.8,125.0 676.2,128.3 680.6,132.0 685.0,136.0 689.4,140.4 693.8,145.1 698.2,150.1 702.6,155.5 707.0,161.3 711.4,167.4 715.8,173.9 720.2,180.7 724.6,187.9 729.0,195.4 733.4,203.2 737.9,211.4 742.3,220.0 746.7,228.9 751.1,238.1 755.5,247.7 759.9,257.7 764.3,268.0" fill="none" stroke="#1a6f8a" stroke-width="2.5"/>
+  <circle cx="500.0" cy="268.0" r="4" fill="#1a6f8a"/>
+  <circle cx="632.1" cy="110.8" r="4" fill="#1a6f8a"/>
+  <circle cx="764.3" cy="268.0" r="4" fill="#1a6f8a"/>
+  <line x1="632.1" y1="90" x2="632.1" y2="268" stroke="#bbb" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="545" y="168" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1a6f8a">v &gt; 0</text>
+  <text x="700" y="168" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1a6f8a">v &lt; 0</text>
+  <text x="608" y="92" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1a6f8a">v = 0</text>
+  <text x="470" y="320" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#444">la vitesse change de signe au sommet</text>
+  <text x="470" y="348" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#444">y, lui, reste positif puis revient à 0</text>
+</svg>

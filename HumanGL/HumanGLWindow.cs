@@ -49,6 +49,20 @@ public class HumanGLWindow : GameWindow
 
         _cube = new CubeRenderer();
         _character = Limb.InitCharacter();
+        PrintControls();
+    }
+
+    private static void PrintControls()
+    {
+        Console.WriteLine("HumanGL — cliquer dans la fenêtre pour le focus");
+        Console.WriteLine("  I        repos");
+        Console.WriteLine("  W        marche");
+        Console.WriteLine("  Espace   saut");
+        Console.WriteLine("  T        membre suivant (resize)");
+        Console.WriteLine("  R        agrandir");
+        Console.WriteLine("  F        réduire");
+        Console.WriteLine("  Flèches  tourner la caméra");
+        Console.WriteLine("  Échap    quitter");
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
@@ -71,7 +85,7 @@ public class HumanGLWindow : GameWindow
         if (KeyboardState.IsKeyPressed(Keys.Space))
             _animator.SetState(AnimState.Jump);
 
-        // Resize live (AZERTY-friendly) :
+        // Resize live :
         //   T = membre suivant
         //   R = agrandir
         //   F = réduire
@@ -128,10 +142,6 @@ public class HumanGLWindow : GameWindow
         SwapBuffers();
     }
 
-    /// <summary>
-    /// Pile = T × R × S. Les enfants héritent du scale du parent.
-    /// Pivot uniquement au Draw.
-    /// </summary>
     private void RenderNode(Limb node)
     {
         _stack.Push();
@@ -164,7 +174,7 @@ public class HumanGLWindow : GameWindow
         if (width <= 0 || height <= 0)
             return;
 
-        const float focalLength = 1.732051f; // 1 / tan(60° / 2)
+        const float focalLength = 1.732051f;
         const float near = 0.1f;
         const float far = 50.0f;
         float aspectRatio = (float)width / height;

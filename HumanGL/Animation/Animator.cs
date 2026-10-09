@@ -10,10 +10,6 @@ public enum AnimState
     Jump
 }
 
-/// <summary>
-/// Change la recette des membres selon le temps.
-/// Ne dessine rien : juste des angles et une hauteur.
-/// </summary>
 public class Animator
 {
     const float WalkSpeed = 5f;
@@ -21,11 +17,10 @@ public class Animator
     const float JumpImpulse = 5f;
     const float Gravity = 9.81f;
     const float GroundY = 0f;
-    const float CrouchDuration = 0.28f; // fléchit les genoux avant de décoller
+    const float CrouchDuration = 0.28f;
 
     public AnimState State { get; private set; } = AnimState.Idle;
 
-    /// <summary>Secondes depuis le début du saut.</summary>
     public float JumpElapsed { get; private set; }
 
     public void SetState(AnimState state)
@@ -36,10 +31,6 @@ public class Animator
         State = state;
     }
 
-    /// <summary>
-    /// time : temps global, pour la marche (sin).
-    /// deltaTime : temps depuis la frame précédente, pour le saut (gravité).
-    /// </summary>
     public void Update(Limb root, float time, float deltaTime)
     {
         switch (State)
@@ -58,7 +49,7 @@ public class Animator
 
     private static void UpdateWalk(Limb root, float time)
     {
-        // sin oscille entre -1 et 1 → angle entre -30° et +30°
+
         float walkAngle = MathF.Sin(time * WalkSpeed) * WalkAmplitude;
 
         SetRotationX(root, "LeftUpperArm", walkAngle);
@@ -66,7 +57,6 @@ public class Animator
         SetRotationX(root, "LeftThigh", -walkAngle);
         SetRotationX(root, "RightThigh", walkAngle);
 
-        // Coudes vers l'avant, genoux vers l'arrière (sens opposés).
         SetRotationX(root, "LeftForearm", -MathF.Abs(walkAngle) * 0.5f);
         SetRotationX(root, "RightForearm", -MathF.Abs(walkAngle) * 0.5f);
 
@@ -80,10 +70,9 @@ public class Animator
     {
         JumpElapsed += deltaTime;
 
-        // 1) Accroupissement au sol : genoux pliés, légère descente du torse
         if (JumpElapsed < CrouchDuration)
         {
-            float crouch = JumpElapsed / CrouchDuration; // 0 → 1
+            float crouch = JumpElapsed / CrouchDuration;
             root.LocalPosition = new Vector3(root.LocalPosition.X, GroundY - 0.2f * crouch, root.LocalPosition.Z);
 
             SetRotationX(root, "LeftThigh", -55f * crouch);
@@ -92,13 +81,12 @@ public class Animator
             SetRotationX(root, "RightCalf", 75f * crouch);
             SetRotationX(root, "LeftUpperArm", 20f * crouch);
             SetRotationX(root, "RightUpperArm", 20f * crouch);
-            // Coudes vers l'avant, opposés aux genoux
+
             SetRotationX(root, "LeftForearm", -60f * crouch);
             SetRotationX(root, "RightForearm", -60f * crouch);
             return;
         }
 
-        // 2) Vol : chronomètre du décollage seulement (après le crouch)
         float flightTime = JumpElapsed - CrouchDuration;
         float y = GroundY + JumpImpulse * flightTime - 0.5f * Gravity * flightTime * flightTime;
 
@@ -130,10 +118,6 @@ public class Animator
             ResetPose(child);
     }
 
-    /// <summary>
-    /// Vector3 est un struct : on ne peut pas écrire node.LocalRotation.X = …,
-    /// ça modifierait une copie. On remplace tout le vecteur.
-    /// </summary>
     private static void SetRotationX(Limb root, string name, float degrees)
     {
         Limb? node = root.FindNode(name);
