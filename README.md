@@ -55,7 +55,7 @@ Cliquez sur la fenêtre pour lui donner le focus, puis maintenez les flèches :
 - **Haut / bas** : monter ou descendre autour du cube pour voir le dessus ou le dessous.
 - **Échap** : quitter (ou utiliser le bouton de fermeture).
 
-Le cube reste immobile et centré : c'est la caméra qui se déplace, à une distance constante de 3 unités. L'inclinaison est limitée à ±80° pour éviter de retourner la vue. La vitesse est de 90° par seconde, indépendamment du nombre d'images par seconde.
+Le cube reste immobile et centré : c'est la caméra qui se déplace, à une distance constante de 6 unités. La rotation est illimitée horizontalement et verticalement ; la vue passe à l'envers pendant un tour vertical complet. La vitesse est de 90° par seconde, indépendamment du nombre d'images par seconde.
 
 ### Compiler sans ouvrir la fenêtre
 
