@@ -5,7 +5,7 @@
 // Position du sommet fournie par CubeRenderer.
 layout (location = 0) in vec3 position;
 
-// Transformations envoyees par le C# : objet, camera et perspective.
+// Matrices envoyees par le C#.
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
