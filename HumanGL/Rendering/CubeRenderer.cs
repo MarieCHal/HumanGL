@@ -5,10 +5,10 @@ namespace HumanGL.Rendering;
 
 public sealed class CubeRenderer : IDisposable
 {
-    // VAO : memorise comment lire les sommets.
-    private int _vertexLayout;
+    // VAO : memorise comment lire les sommets/vertex.
+    private int _cubeVertexSetup;
     // VBO : stocke les coordonnees des sommets sur la carte graphique.
-    private int _vertexBuffer;
+    private int _cubeVertexStorage;
     private readonly ShaderProgram _shaderProgram;
 
     public CubeRenderer()
@@ -77,10 +77,10 @@ public sealed class CubeRenderer : IDisposable
             -0.5f, -0.5f,  0.5f
         };
 
-        // Cree le stockage des sommets et leur configuration de lecture, vide.
-        _vertexLayout = GL.GenVertexArray();
-        _vertexBuffer = GL.GenBuffer();
-        GL.BindVertexArray(_vertexLayout);
+        // Cree leur configuration de lecture et le stockage des sommets  vide.
+        _cubeVertexSetup = GL.GenVertexArray();
+        _cubeVertexStorage = GL.GenBuffer();
+        GL.BindVertexArray(_cubeVertexSetup);
 
         UploadVertexPositions(vertexPositions);
 
@@ -89,6 +89,7 @@ public sealed class CubeRenderer : IDisposable
 
         // Entree 0 du shader : lit x, y, z depuis le debut, avec 12 octets entre sommets.
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, bytesPerVertex, 0);
+        //Autorise OpenGL à lire les coordonnées dans le buffer pour alimenter l’entrée 0
         GL.EnableVertexAttribArray(0);
         GL.BindVertexArray(0);
     }
@@ -97,7 +98,7 @@ public sealed class CubeRenderer : IDisposable
     private void UploadVertexPositions(float[] vertexPositions)
     {
         // Selectionne le buffer vide.
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _cubeVertexStorage);
         GL.BufferData(
             BufferTarget.ArrayBuffer,
             vertexPositions.Length * sizeof(float),
@@ -114,7 +115,7 @@ public sealed class CubeRenderer : IDisposable
         _shaderProgram.SetMatrix4("model", modelMatrix); // position, rotation taille du membre
         _shaderProgram.SetVector3("objectColor", color);
         // Selectionne les sommets du cube.
-        GL.BindVertexArray(_vertexLayout);
+        GL.BindVertexArray(_cubeVertexSetup);
         // Dessine les 12 triangles du cube en un seul appel avec l'entrée 0.
         GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
     }
@@ -122,10 +123,10 @@ public sealed class CubeRenderer : IDisposable
     public void Dispose()
     {
         // Libere les ressources de la carte graphique.
-        GL.DeleteBuffer(_vertexBuffer);
-        GL.DeleteVertexArray(_vertexLayout);
-        _vertexBuffer = 0;
-        _vertexLayout = 0;
+        GL.DeleteBuffer(_cubeVertexStorage);
+        GL.DeleteVertexArray(_cubeVertexSetup);
+        _cubeVertexStorage = 0;
+        _cubeVertexSetup = 0;
         _shaderProgram.Dispose();
     }
 }

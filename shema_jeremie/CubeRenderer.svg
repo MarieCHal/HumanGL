@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="2162" viewBox="0 0 1080 2162" role="img" aria-labelledby="title desc">
+<title id="title">CubeRenderer.cs</title><desc id="desc">Prépare un cube unique ; le redessine avec les données de chaque membre.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#64748b"/></marker></defs>
+<rect width="1080" height="2162" fill="#ffffff"/>
+<g font-family="Arial, Helvetica, sans-serif">
+<text x="60" y="58" font-size="34" font-weight="700" fill="#0f172a">CubeRenderer.cs</text>
+<text x="60" y="95" font-size="19" fill="#475569">Prépare un cube unique ; le redessine avec les données de chaque membre.</text>
+<text x="60" y="145" font-size="21" fill="#2563eb" font-weight="700">1 · Une seule fois : constructeur et PrepareCubeVertices()</text>
+<rect x="60" y="169" width="960" height="84" rx="14" fill="#fff7ed" stroke="#fdba74"/>
+<text x="82" y="201" font-size="21" fill="#0f172a" font-weight="700">Créer ShaderProgram</text>
+<text x="82" y="231" font-size="19" fill="#334155" font-weight="400">Charge cube.vert et cube.frag : voir ShaderProgram.svg.</text>
+<path d="M540 258 V283" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="293" width="960" height="111" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="325" font-size="21" fill="#0f172a" font-weight="700">Préparer vertexPositions</text>
+<text x="82" y="355" font-size="19" fill="#334155" font-weight="400">36 positions : 6 faces × 2 triangles × 3 sommets.</text>
+<text x="82" y="382" font-size="19" fill="#334155" font-weight="400">Cube 1 × 1 × 1 centré à l’origine.</text>
+<path d="M540 409 V434" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="444" width="960" height="138" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="476" font-size="21" fill="#0f172a" font-weight="700">Créer et sélectionner les ressources OpenGL</text>
+<text x="82" y="506" font-size="19" fill="#334155" font-weight="400">_vertexBuffer (VBO) : stockage des coordonnées sur la carte graphique.</text>
+<text x="82" y="533" font-size="19" fill="#334155" font-weight="400">_vertexLayout (VAO) : configuration expliquant comment lire les sommets.</text>
+<text x="82" y="560" font-size="19" fill="#334155" font-weight="400">Gen crée les identifiants ; BindVertexArray sélectionne le VAO.</text>
+<path d="M540 587 V612" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="622" width="960" height="84" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="654" font-size="21" fill="#0f172a" font-weight="700">UploadVertexPositions(vertexPositions)</text>
+<text x="82" y="684" font-size="19" fill="#334155" font-weight="400">BindBuffer sélectionne le stockage ; BufferData copie les coordonnées.</text>
+<path d="M540 711 V736" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="746" width="960" height="111" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="778" font-size="21" fill="#0f172a" font-weight="700">VertexAttribPointer → EnableVertexAttribArray → BindVertexArray(0)</text>
+<text x="82" y="808" font-size="19" fill="#334155" font-weight="400">Mémorise : entrée 0, trois float (x, y, z), 12 octets par sommet.</text>
+<text x="82" y="835" font-size="19" fill="#334155" font-weight="400">Le VAO retient le buffer associé ; on active l’entrée 0 puis désélectionne le VAO.</text>
+<text x="60" y="912" font-size="21" fill="#2563eb" font-weight="700">2 · Pour chaque membre : Draw(projection, view, model, color)</text>
+<rect x="60" y="936" width="960" height="111" rx="14" fill="#fff7ed" stroke="#fdba74"/>
+<text x="82" y="968" font-size="21" fill="#0f172a" font-weight="700">_shaderProgram.Use() et SetMatrix4 / SetVector3</text>
+<text x="82" y="998" font-size="19" fill="#334155" font-weight="400">Active les shaders puis envoie projection, view, model et objectColor.</text>
+<text x="82" y="1025" font-size="19" fill="#334155" font-weight="400">Ces uniformes restent identiques pendant cet appel de dessin.</text>
+<path d="M540 1052 V1077" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1087" width="960" height="84" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="1119" font-size="21" fill="#0f172a" font-weight="700">GL.BindVertexArray(_vertexLayout)</text>
+<text x="82" y="1149" font-size="19" fill="#334155" font-weight="400">Retrouve le buffer du cube et sa configuration de lecture.</text>
+<path d="M540 1176 V1201" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1211" width="960" height="84" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="1243" font-size="21" fill="#0f172a" font-weight="700">GL.DrawArrays(Triangles, 0, 36)</text>
+<text x="82" y="1273" font-size="19" fill="#334155" font-weight="400">Demande le dessin de 36 sommets regroupés en 12 triangles.</text>
+<path d="M540 1300 V1325" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1335" width="960" height="138" rx="14" fill="#f0fdf4" stroke="#86efac"/>
+<text x="82" y="1367" font-size="21" fill="#0f172a" font-weight="700">Carte graphique : cube.vert</text>
+<text x="82" y="1397" font-size="19" fill="#334155" font-weight="400">Pour chaque sommet, lit position depuis l’entrée 0 du VAO.</text>
+<text x="82" y="1424" font-size="19" fill="#334155" font-weight="400">gl_Position = projection × view × model × vec4(position, 1.0)</text>
+<text x="82" y="1451" font-size="19" fill="#334155" font-weight="400">Le calcul transforme le sommet : model, puis view, puis projection.</text>
+<path d="M540 1478 V1503" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1513" width="960" height="111" rx="14" fill="#f0fdf4" stroke="#86efac"/>
+<text x="82" y="1545" font-size="21" fill="#0f172a" font-weight="700">OpenGL : triangles et fragments</text>
+<text x="82" y="1575" font-size="19" fill="#334155" font-weight="400">Découpe les triangles aux limites visibles et applique la perspective.</text>
+<text x="82" y="1602" font-size="19" fill="#334155" font-weight="400">Détermine les fragments qui contribuent aux pixels.</text>
+<path d="M540 1629 V1654" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1664" width="960" height="111" rx="14" fill="#f0fdf4" stroke="#86efac"/>
+<text x="82" y="1696" font-size="21" fill="#0f172a" font-weight="700">Carte graphique : cube.frag</text>
+<text x="82" y="1726" font-size="19" fill="#334155" font-weight="400">Utilise objectColor et produit vec4(objectColor, 1.0).</text>
+<text x="82" y="1753" font-size="19" fill="#334155" font-weight="400">Le test de profondeur décide quelles surfaces restent visibles.</text>
+<path d="M540 1780 V1805" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1815" width="960" height="84" rx="14" fill="#fff7ed" stroke="#fdba74"/>
+<text x="82" y="1847" font-size="21" fill="#0f172a" font-weight="700">Image dans le buffer arrière</text>
+<text x="82" y="1877" font-size="19" fill="#334155" font-weight="400">HumanGLWindow poursuit les autres membres, puis appelle SwapBuffers().</text>
+<text x="60" y="1954" font-size="21" fill="#2563eb" font-weight="700">3 · À la fermeture : Dispose()</text>
+<rect x="60" y="1978" width="960" height="84" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="2010" font-size="21" fill="#0f172a" font-weight="700">Libérer les ressources</text>
+<text x="82" y="2040" font-size="19" fill="#334155" font-weight="400">DeleteBuffer, DeleteVertexArray et _shaderProgram.Dispose().</text></g></svg>

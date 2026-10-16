@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1705" viewBox="0 0 1080 1705" role="img" aria-labelledby="title desc">
+<title id="title">HumanGLWindow.cs</title><desc id="desc">Organise la scène, demande les dessins et affiche chaque image.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#64748b"/></marker></defs>
+<rect width="1080" height="1705" fill="#ffffff"/>
+<g font-family="Arial, Helvetica, sans-serif">
+<text x="60" y="58" font-size="34" font-weight="700" fill="#0f172a">HumanGLWindow.cs</text>
+<text x="60" y="95" font-size="19" fill="#475569">Organise la scène, demande les dessins et affiche chaque image.</text>
+<text x="60" y="145" font-size="21" fill="#2563eb" font-weight="700">1 · À l’ouverture</text>
+<rect x="60" y="169" width="960" height="111" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="201" font-size="21" fill="#0f172a" font-weight="700">OnLoad()</text>
+<text x="82" y="231" font-size="19" fill="#334155" font-weight="400">Active le test de profondeur : les surfaces proches cachent les autres.</text>
+<text x="82" y="258" font-size="19" fill="#334155" font-weight="400">UpdateProjection() prépare la perspective adaptée à la fenêtre.</text>
+<path d="M540 285 V310" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="320" width="960" height="111" rx="14" fill="#fff7ed" stroke="#fdba74"/>
+<text x="82" y="352" font-size="21" fill="#0f172a" font-weight="700">Créer les objets</text>
+<text x="82" y="382" font-size="19" fill="#334155" font-weight="400">new CubeRenderer() prépare le cube et les shaders.</text>
+<text x="82" y="409" font-size="19" fill="#334155" font-weight="400">Limb.InitCharacter() construit les membres du personnage.</text>
+<text x="60" y="486" font-size="21" fill="#2563eb" font-weight="700">2 · À chaque mise à jour : OnUpdateFrame()</text>
+<rect x="60" y="510" width="960" height="111" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="542" font-size="21" fill="#0f172a" font-weight="700">Lire les touches et faire évoluer la scène</text>
+<text x="82" y="572" font-size="19" fill="#334155" font-weight="400">Animation, taille des membres et mouvement de la caméra.</text>
+<text x="82" y="599" font-size="19" fill="#334155" font-weight="400">Ces mises à jour préparent les données ; elles ne dessinent pas.</text>
+<text x="60" y="676" font-size="21" fill="#2563eb" font-weight="700">3 · À chaque image : OnRenderFrame()</text>
+<rect x="60" y="700" width="960" height="111" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="732" font-size="21" fill="#0f172a" font-weight="700">GL.Clear(...) puis _stack.Init()</text>
+<text x="82" y="762" font-size="19" fill="#334155" font-weight="400">Efface la couleur et la profondeur de l’image précédente.</text>
+<text x="82" y="789" font-size="19" fill="#334155" font-weight="400">Réinitialise la pile de matrices avant de parcourir le personnage.</text>
+<path d="M540 816 V841" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="851" width="960" height="138" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="883" font-size="21" fill="#0f172a" font-weight="700">RenderNode(node) : préparer un membre</text>
+<text x="82" y="913" font-size="19" fill="#334155" font-weight="400">Push() sauvegarde la matrice du parent.</text>
+<text x="82" y="940" font-size="19" fill="#334155" font-weight="400">Multiply(node.GetStackMatrix()) ajoute la transformation du membre.</text>
+<text x="82" y="967" font-size="19" fill="#334155" font-weight="400">model = matrice courante × node.GetPivotMatrix().</text>
+<path d="M540 994 V1019" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1029" width="960" height="111" rx="14" fill="#fff7ed" stroke="#fdba74"/>
+<text x="82" y="1061" font-size="21" fill="#0f172a" font-weight="700">_cube.Draw(projection, view, model, color)</text>
+<text x="82" y="1091" font-size="19" fill="#334155" font-weight="400">Transmet la perspective, la caméra, la matrice du membre et sa couleur.</text>
+<text x="82" y="1118" font-size="19" fill="#334155" font-weight="400">La suite est détaillée dans CubeRenderer.svg.</text>
+<path d="M540 1145 V1170" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1180" width="960" height="111" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="1212" font-size="21" fill="#0f172a" font-weight="700">Parcourir les enfants, puis Pop()</text>
+<text x="82" y="1242" font-size="19" fill="#334155" font-weight="400">RenderNode(child) répète ces étapes pour chaque enfant.</text>
+<text x="82" y="1269" font-size="19" fill="#334155" font-weight="400">Pop() restaure la matrice du parent après toute cette branche.</text>
+<path d="M540 1296 V1321" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1331" width="960" height="84" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="1363" font-size="21" fill="#0f172a" font-weight="700">SwapBuffers()</text>
+<text x="82" y="1393" font-size="19" fill="#334155" font-weight="400">Après tous les membres, présente l’image terminée dans la fenêtre.</text>
+<text x="60" y="1470" font-size="21" fill="#2563eb" font-weight="700">4 · Autres événements</text>
+<rect x="60" y="1494" width="960" height="111" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="1526" font-size="21" fill="#0f172a" font-weight="700">Redimensionnement / fermeture</text>
+<text x="82" y="1556" font-size="19" fill="#334155" font-weight="400">OnFramebufferResize() → UpdateProjection() recalcule la perspective.</text>
+<text x="82" y="1583" font-size="19" fill="#334155" font-weight="400">OnUnload() → _cube.Dispose() libère les ressources graphiques.</text></g></svg>

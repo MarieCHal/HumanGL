@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1666" viewBox="0 0 1080 1666" role="img" aria-labelledby="title desc">
+<title id="title">ShaderProgram.cs</title><desc id="desc">Prépare les shaders et transmet les données ; le dessin est lancé par CubeRenderer.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#64748b"/></marker></defs>
+<rect width="1080" height="1666" fill="#ffffff"/>
+<g font-family="Arial, Helvetica, sans-serif">
+<text x="60" y="58" font-size="34" font-weight="700" fill="#0f172a">ShaderProgram.cs</text>
+<text x="60" y="95" font-size="19" fill="#475569">Prépare les shaders et transmet les données ; le dessin est lancé par CubeRenderer.</text>
+<text x="60" y="145" font-size="21" fill="#2563eb" font-weight="700">1 · Une seule fois : constructeur ShaderProgram(vertexPath, fragmentPath)</text>
+<rect x="60" y="169" width="960" height="138" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="201" font-size="21" fill="#0f172a" font-weight="700">CompileShader() pour cube.vert et cube.frag</text>
+<text x="82" y="231" font-size="19" fill="#334155" font-weight="400">Lit le fichier → CreateShader(type) → ShaderSource → CompileShader.</text>
+<text x="82" y="258" font-size="19" fill="#334155" font-weight="400">ShaderType indique VertexShader ou FragmentShader.</text>
+<text x="82" y="285" font-size="19" fill="#334155" font-weight="400">Vérifie CompileStatus ; retourne l’identifiant si la compilation réussit.</text>
+<path d="M540 312 V337" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="347" width="960" height="84" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="379" font-size="21" fill="#0f172a" font-weight="700">GL.CreateProgram() → _handle</text>
+<text x="82" y="409" font-size="19" fill="#334155" font-weight="400">Crée le programme OpenGL ; _handle conserve son identifiant.</text>
+<path d="M540 436 V461" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="471" width="960" height="84" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="503" font-size="21" fill="#0f172a" font-weight="700">GL.AttachShader() puis GL.LinkProgram()</text>
+<text x="82" y="533" font-size="19" fill="#334155" font-weight="400">Attache les deux shaders et les lie dans un programme exécutable.</text>
+<path d="M540 560 V585" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="595" width="960" height="111" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="627" font-size="21" fill="#0f172a" font-weight="700">Vérifier LinkStatus puis détacher les shaders</text>
+<text x="82" y="657" font-size="19" fill="#334155" font-weight="400">En cas de réussite : DetachShader pour chacun des deux shaders.</text>
+<text x="82" y="684" font-size="19" fill="#334155" font-weight="400">Le programme lié conserve son résultat exécutable.</text>
+<path d="M540 711 V736" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="746" width="960" height="138" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="778" font-size="21" fill="#0f172a" font-weight="700">Nettoyage : catch / finally</text>
+<text x="82" y="808" font-size="19" fill="#334155" font-weight="400">Si une erreur survient : catch libère le programme et transmet l’erreur.</text>
+<text x="82" y="835" font-size="19" fill="#334155" font-weight="400">Dans tous les cas : finally demande la suppression des shaders créés.</text>
+<text x="82" y="862" font-size="19" fill="#334155" font-weight="400">Après réussite, le programme _handle reste disponible.</text>
+<text x="60" y="939" font-size="21" fill="#2563eb" font-weight="700">2 · Appels reçus de CubeRenderer.Draw() : Use(), puis envois</text>
+<rect x="60" y="963" width="960" height="84" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="995" font-size="21" fill="#0f172a" font-weight="700">Use() → GL.UseProgram(_handle)</text>
+<text x="82" y="1025" font-size="19" fill="#334155" font-weight="400">Sélectionne ce programme pour les envois de données et les dessins suivants.</text>
+<path d="M540 1052 V1077" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1087" width="960" height="138" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="1119" font-size="21" fill="#0f172a" font-weight="700">SetMatrix4(name, values) / SetVector3(name, value)</text>
+<text x="82" y="1149" font-size="19" fill="#334155" font-weight="400">GetUniformLocation cherche l’emplacement de la variable grâce à son nom.</text>
+<text x="82" y="1176" font-size="19" fill="#334155" font-weight="400">UniformMatrix4 envoie une matrice ; Uniform3 envoie les trois couleurs RGB.</text>
+<text x="82" y="1203" font-size="19" fill="#334155" font-weight="400">Si la variable est absente ou inactive, la méthode signale une erreur.</text>
+<path d="M540 1230 V1255" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="60" y="1265" width="960" height="138" rx="14" fill="#fff7ed" stroke="#fdba74"/>
+<text x="82" y="1297" font-size="21" fill="#0f172a" font-weight="700">Variables des shaders prêtes pour le prochain dessin</text>
+<text x="82" y="1327" font-size="19" fill="#334155" font-weight="400">cube.vert reçoit projection, view et model.</text>
+<text x="82" y="1354" font-size="19" fill="#334155" font-weight="400">cube.frag reçoit objectColor.</text>
+<text x="82" y="1381" font-size="19" fill="#334155" font-weight="400">CubeRenderer lance ensuite GL.DrawArrays : les shaders s’exécutent sur le GPU.</text>
+<text x="60" y="1458" font-size="21" fill="#2563eb" font-weight="700">3 · À la fermeture : Dispose()</text>
+<rect x="60" y="1482" width="960" height="84" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="82" y="1514" font-size="21" fill="#0f172a" font-weight="700">GL.DeleteProgram(_handle)</text>
+<text x="82" y="1544" font-size="19" fill="#334155" font-weight="400">Demande la suppression du programme, puis remet _handle à 0.</text></g></svg>
