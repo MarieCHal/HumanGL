@@ -153,6 +153,7 @@ public class HumanGLWindow : GameWindow
             RenderNode(_character);
         }
 
+        // Affiche l'image terminee en echangeant les buffers avant et arriere.
         SwapBuffers();
     }
 
@@ -162,7 +163,7 @@ public class HumanGLWindow : GameWindow
         _stack.Multiply(node.GetStackMatrix());
 
         Matrix4x4 model = _stack.GetCurrent() * node.GetPivotMatrix();
-        _cube!.Draw(model.ToColumnMajorArray(), _camera.ViewMatrix, _projection, node.Color);
+        _cube!.Draw(_projection, _camera.ViewMatrix, model.ToColumnMajorArray(), node.Color);
 
         foreach (Limb child in node.Children)
             RenderNode(child);

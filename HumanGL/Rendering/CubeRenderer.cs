@@ -105,13 +105,13 @@ public sealed class CubeRenderer : IDisposable
             BufferUsageHint.StaticDraw);
     }
 
-    public void Draw(float[] modelMatrix, float[] viewMatrix, float[] projectionMatrix, Vector3 color)
+    public void Draw(float[] projectionMatrix, float[] viewMatrix, float[] modelMatrix, Vector3 color)
     {
         // Active les shaders et leur transmet les matrices et la couleur.
         _shaderProgram.Use();
-        _shaderProgram.SetMatrix4("model", modelMatrix); // position, rotation taille du membre
-        _shaderProgram.SetMatrix4("view", viewMatrix); // point de vue de la caméra
         _shaderProgram.SetMatrix4("projection", projectionMatrix); // perspective de la caméra
+        _shaderProgram.SetMatrix4("view", viewMatrix); // point de vue de la caméra
+        _shaderProgram.SetMatrix4("model", modelMatrix); // position, rotation taille du membre
         _shaderProgram.SetVector3("objectColor", color);
         // Selectionne les sommets du cube.
         GL.BindVertexArray(_vertexLayout);
