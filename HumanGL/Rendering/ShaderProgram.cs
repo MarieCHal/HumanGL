@@ -52,22 +52,21 @@ public sealed class ShaderProgram : IDisposable
         }
     }
 
-    // Active ce programme de shaders pour les prochains dessins et envois de variables uniformes.
+    // Active ce programme de shaders pour les prochains dessins et envois de variables.
     public void Use() => GL.UseProgram(_handle);
 
     // Le programme doit être actif (Use) avant l'envoi d'une matrice.
     public void SetMatrix4(string name, float[] values)
     {
-        // Cherche l'emplacement de la variable uniform nommée dans le shader (-1 si absente ou inactive).
+        // Cherche l'emplacement de la variable nommée dans le shader (-1 si absente ou inactive).
         int location = GL.GetUniformLocation(_handle, name);
         if (location == -1)
             throw new InvalidOperationException($"Matrice introuvable dans le shader : {name}");
-        // Envoie une matrice 4x4 à cet emplacement dans le programme actif, sans la transposer.
+        // Envoie une matrice 4x4 à cet emplacement dans le programme actif.
         GL.UniformMatrix4(location, 1, false, values);
     }
 
     // Envoie trois composantes, par exemple rouge, vert et bleu pour une couleur.
-    // Le programme doit être actif (Use) avant cet appel.
     public void SetVector3(string name, Vector3 value)
     {
         int location = GL.GetUniformLocation(_handle, name);
@@ -92,9 +91,9 @@ public sealed class ShaderProgram : IDisposable
         string source = File.ReadAllText(path);
         // Crée un shader du type demandé : sommets (vertex) ou fragments (fragment).
         int shader = GL.CreateShader(type);
-        // Fournit au shader le texte du code GLSL chargé depuis le fichier.
+        // Fournit au shader le texte du code chargé depuis le fichier.
         GL.ShaderSource(shader, source);
-        // Demande au pilote graphique de compiler ce code GLSL.
+        // Demande au pilote graphique de compiler ce code.
         GL.CompileShader(shader);
         // Vérifie si la compilation du shader a réussi (success différent de 0).
         GL.GetShader(shader, ShaderParameter.CompileStatus, out int success);

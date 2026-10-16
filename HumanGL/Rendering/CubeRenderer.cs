@@ -115,7 +115,7 @@ public sealed class CubeRenderer : IDisposable
         _shaderProgram.SetVector3("objectColor", color);
         // Selectionne les sommets du cube.
         GL.BindVertexArray(_vertexLayout);
-        // Dessine les 12 triangles du cube en un seul appel.
+        // Dessine les 12 triangles du cube en un seul appel avec l'entrée 0.
         GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
     }
 
