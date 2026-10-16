@@ -183,31 +183,31 @@ public class HumanGLWindow : GameWindow
     }
 
     // Adapte la zone de dessin et la perspective a la taille de la fenetre.
-    private void UpdateProjection(int width, int height)
+    private void UpdateProjection(int windowWidth, int windowHeight)
     {
-        GL.Viewport(0, 0, width, height);
-        if (width <= 0 || height <= 0)
+        GL.Viewport(0, 0, windowWidth, windowHeight);
+        if (windowWidth <= 0 || windowHeight <= 0)
             return;
 
-        float aspectRatio = (float)width / height;
+        float widthToHeightRatio = (float)windowWidth / windowHeight;
 
-        // Facteur de perspective pour un angle de vision vertical de 60 degres.
-        const float focalLength = 1.7f;
+        // Facteur de perspective pour un angle de vision vertical d'environ 60 degres.
+        const float perspectiveScale = 1.7f;
         // Limite visible la plus proche de la camera.
-        const float nearClipDistance = 0.1f;
+        const float minimumVisibleDistance = 0.1f;
         // Limite visible la plus eloignee de la camera.
-        const float farClipDistance = 50.0f;
+        const float maximumVisibleDistance = 50.0f;
         // Remet toutes les cases de la matrice a zero.
         Array.Clear(_projection);
         // Perspective horizontale, adaptee aux proportions de la fenetre.
-        _projection[0] = focalLength / aspectRatio;
+        _projection[0] = perspectiveScale / widthToHeightRatio;
         // Perspective verticale.
-        _projection[5] = focalLength;
+        _projection[5] = perspectiveScale;
         // Convertit la profondeur entre les deux limites pour OpenGL.
-        _projection[10] = -(farClipDistance + nearClipDistance) / (farClipDistance - nearClipDistance);
+        _projection[10] = -(maximumVisibleDistance + minimumVisibleDistance) / (maximumVisibleDistance - minimumVisibleDistance);
         // Prepare la division par la distance : loin = plus petit.
         _projection[11] = -1;
         // Complete le calcul de profondeur avec les deux limites.
-        _projection[14] = -(2 * farClipDistance * nearClipDistance) / (farClipDistance - nearClipDistance);
+        _projection[14] = -(2 * maximumVisibleDistance * minimumVisibleDistance) / (maximumVisibleDistance - minimumVisibleDistance);
     }
 }
